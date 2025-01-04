@@ -18,4 +18,8 @@ body {
   .my-container {
     @apply max-w-[1440px] mx-auto px-4;
   }
+
+  .rbc-day-bg {
+    @apply cursor-pointer;
+  }
 }

@@ -51,6 +51,8 @@ const BookSessionPage = () => (
       startAccessor="start"
       endAccessor="end"
       style={{ height: 500 }}
+      onSelectSlot={(slotInfo) => console.log(slotInfo)}
+      onSelectEvent={(event) => console.log(event)}
     />
   </div>
 );
