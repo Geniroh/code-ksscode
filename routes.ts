@@ -1,7 +1,7 @@
 /**
  * An array of routes that are accessible to the public
  */
-export const publicRoutes = ["/register", "/auth-error"];
+export const publicRoutes = ["/","/register", "/auth-error"];
 
 /**
  * An array of routes that are accessible only to authenticated users

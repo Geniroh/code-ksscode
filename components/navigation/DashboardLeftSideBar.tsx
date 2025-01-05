@@ -41,7 +41,7 @@ const DashboardLeftSideBar = () => {
   const pathname = usePathname();
 
   return (
-    <section className="hidden sm:flex flex-col sm:w-[150px] lg:w-[246px] px-4 border-r border-gray-200 bg-white">
+    <section className="hidden sm:flex flex-col sm:w-[90px] lg:w-[246px] px-4 border-r border-gray-200 bg-white shadow-sm">
       {/* Logo Section */}
       <div className="h-[70px] flex items-center">
         <Link href="/">
@@ -68,6 +68,7 @@ const DashboardLeftSideBar = () => {
             <a
               key={link.href}
               href={`/${link.href}`}
+              title={link.desc}
               className={`flex items-center gap-4 px-4 py-2 rounded-lg transition-all ${
                 isActive ? "bg-blue-100 text-blue-600" : "text-gray-600"
               } hover:bg-gray-100`}

@@ -1,23 +1,54 @@
-import Image from "next/image";
-import Link from "next/link";
 import React from "react";
 
-const DashboardTopNav = () => {
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { auth } from "@/auth";
+
+interface SessionUser {
+  name: string;
+  email: string;
+  image: string;
+}
+
+interface AuthResponse {
+  user: SessionUser;
+}
+
+const DashboardTopNav = async () => {
+  const { user }: AuthResponse = await auth<AuthResponse>();
+
   return (
-    <nav className="flex-between w-full dark:shadow-none gap-5 h-[80px] px-4">
-      <Link href="/" className="flex items-center gap-1">
-        <Image src="/images/logo.png" alt="Logo" width={40} height={40} />
-        <p className="font-space-grotesk max-sm:hidden">
-          <span className=" text-primary text-[24px] font-bold hidden md:block">
-            Ksscode
-          </span>
-        </p>
-      </Link>
-
-      <p>Global Search</p>
-
-      <div className="flex-between gap-5">Mobile Nav</div>
-    </nav>
+    <div className="h-[70px] w-full flex-between px-4 shadow-sm">
+      <div></div>
+      <div>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Avatar>
+              <AvatarImage
+                src={user?.image}
+                alt={user?.name || "User Avatar"}
+              />
+              <AvatarFallback>
+                {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
+              </AvatarFallback>
+            </Avatar>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Profile</DropdownMenuItem>
+            <DropdownMenuItem>Team</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
   );
 };
 
