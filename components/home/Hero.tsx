@@ -3,6 +3,7 @@
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -31,7 +32,9 @@ export default function Hero() {
                   height={16}
                 />
               </div>
-              <span className="text-md">Sign up with workspace</span>
+              <Link href="register" className="text-md">
+                Sign up with workspace
+              </Link>
             </Button>
           </div>
         </motion.div>
