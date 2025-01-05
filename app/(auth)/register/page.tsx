@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
+import { signIn } from "@/auth";
+import { ChevronLeft } from "lucide-react";
 
 const RegisterPage = () => {
   return (
@@ -18,6 +20,15 @@ const RegisterPage = () => {
       <Card className={"max-w-[380px] mx-auto w-full"}>
         <CardHeader>
           <CardTitle>
+            <div className="flex items-center justify-start">
+              <Link
+                href={"/"}
+                className="text-xs cursor-pointer flex items-center gap-1 font-medium text-body"
+              >
+                <ChevronLeft size={12} />
+                Back
+              </Link>
+            </div>
             <div className="flex items-center justify-center gap-1">
               <Image
                 src="/images/logo.png"
@@ -46,17 +57,26 @@ const RegisterPage = () => {
         </CardHeader>
         <CardContent className=""></CardContent>
         <CardFooter>
-          <Button size={"lg"} className="w-full">
-            <div className="p-1 bg-white rounded-sm">
-              <Image
-                src="/icons/google.svg"
-                alt="google"
-                width={16}
-                height={16}
-              />
-            </div>
-            Sign in with Google
-          </Button>
+          <form
+            action={async () => {
+              "use server";
+
+              await signIn("google", { redirectTo: "/dashboard" });
+            }}
+            className="w-full block"
+          >
+            <Button size={"lg"} className="w-full">
+              <div className="p-1 bg-white rounded-sm">
+                <Image
+                  src="/icons/google.svg"
+                  alt="google"
+                  width={16}
+                  height={16}
+                />
+              </div>
+              Sign in with Google
+            </Button>
+          </form>
         </CardFooter>
       </Card>
     </div>

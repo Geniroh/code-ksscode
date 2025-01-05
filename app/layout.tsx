@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/context/Theme";
+// import { ThemeProvider } from "@/context/Theme";
 import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({
@@ -29,14 +29,14 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
       >
-        <ThemeProvider
+        {/* <ThemeProvider
           attribute="class"
           defaultTheme="light"
-          enableSystem
+          // enableSystem
           disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        > */}
+        {children}
+        {/* </ThemeProvider> */}
         <Toaster />
       </body>
     </html>
