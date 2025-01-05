@@ -4,6 +4,7 @@
 
 body {
   font-family: "Inter", sans-serif;
+  overflow-x: hidden;
 }
 
 :root {
@@ -17,6 +18,26 @@ body {
 
   .my-container {
     @apply max-w-[1440px] mx-auto px-4;
+  }
+
+  .my-h1 {
+    @apply text-3xl font-bold tracking-tight sm:text-4xl text-heading;
+  }
+
+  .my-h2 {
+    @apply text-[20px] text-heading font-semibold leading-7;
+  }
+
+  .my-p-regular {
+    @apply text-lg leading-8 text-body;
+  }
+
+  .my-p-body {
+    @apply text-base leading-7 text-body;
+  }
+
+  .my-primary-text-gradient {
+    @apply bg-primary-gradient bg-clip-text text-transparent;
   }
 
   .rbc-day-bg {

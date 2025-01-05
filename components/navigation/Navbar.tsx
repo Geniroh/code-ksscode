@@ -14,17 +14,17 @@ const Navbar = () => {
           width={40}
         />
 
-        <span className="font-space-grotesk text-primary text-[24px] font-bold hidden md:block">
+        <span className="font-space-grotesk text-primary text-[24px] font-bold ">
           Ksscode
         </span>
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="secondary" size="lg">
+        {/* <Button variant="secondary" size="lg">
           <Link href="/login">Login</Link>
-        </Button>
+        </Button> */}
         <Button asChild size="lg">
-          <Link href="/register">Get Started</Link>
+          <Link href="/dashboard">Dashboard</Link>
         </Button>
       </div>
     </nav>

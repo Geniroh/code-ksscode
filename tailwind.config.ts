@@ -29,6 +29,18 @@ export default {
         inter: ["var(--font-inter)"],
         "space-grotesk": ["var(--font-space-grotesk)"],
       },
+      animation: {
+        "pulse-slow": "pulse 3s infinite",
+      },
+      keyframes: {
+        pulse: {
+          "0%, 100%": { transform: "scale(1)", opacity: "1" },
+          "50%": { transform: "scale(1.02)", opacity: "0.9" },
+        },
+      },
+      backgroundImage: {
+        "primary-gradient": "linear-gradient(90deg, #006bff, #0099FB)",
+      },
     },
   },
   // eslint-disable-next-line @typescript-eslint/no-require-imports
