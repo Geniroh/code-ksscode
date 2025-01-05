@@ -1,19 +1,16 @@
 import DashboardLeftSideBar from "@/components/navigation/DashboardLeftSideBar";
-import DashboardTopNav from "@/components/navigation/DashboardTopNav";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import React from "react";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="min-h-screen w-full border-[3px] border-blue-800 bg-[#F5F5F5]">
-      <DashboardTopNav />
-
+    <div className="h-screen w-full border-[3px] border-red-500 flex">
       <div className="flex">
         <DashboardLeftSideBar />
-
-        <section className="flex min-h-screen flex-1 flex-col px-6 pb-6 pt-10 max-md:pb-14 ">
-          <div className="mx-auto w-full max-w-5xl">{children}</div>
-        </section>
+      </div>
+      <div className="w-full border-[3px] border-green-600">
+        <div className="h-[70px] w-full border-[3px] border-black"></div>
+        <div>{children}</div>
       </div>
     </div>
   );
