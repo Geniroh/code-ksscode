@@ -40,6 +40,10 @@ body {
     @apply bg-primary-gradient bg-clip-text text-transparent;
   }
 
+  .search-input {
+    @apply flex-1 font-medium placeholder:font-medium placeholder:text-body/90 w-full h-auto outline-none bg-offwhite font-inter;
+  }
+
   .rbc-day-bg {
     @apply cursor-pointer;
   }

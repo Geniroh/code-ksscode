@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 // import { ThemeProvider } from "@/context/Theme";
 import { Toaster } from "@/components/ui/toaster";
+import QueryWrapper from "@/components/QueryWrapper";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,14 +30,16 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
       >
-        {/* <ThemeProvider
+        <QueryWrapper>
+          {/* <ThemeProvider
           attribute="class"
           defaultTheme="light"
           // enableSystem
           disableTransitionOnChange
         > */}
-        {children}
-        {/* </ThemeProvider> */}
+          {children}
+          {/* </ThemeProvider> */}
+        </QueryWrapper>
         <Toaster />
       </body>
     </html>
