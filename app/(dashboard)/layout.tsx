@@ -1,5 +1,5 @@
 import DashboardLeftSideBar from "@/components/navigation/DashboardLeftSideBar";
-// import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 import React from "react";
 import DashboardTopNav from "@/components/navigation/DashboardTopNav";
 

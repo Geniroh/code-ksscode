@@ -1,28 +1,134 @@
 "use client";
-// import { Calendar, dayjsLocalizer } from "react-big-calendar";
-// import dayjs from "dayjs";
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import type { Event as BigCalendarEvent } from "react-big-calendar";
+import { startOfWeek, format, parse, getDay } from "date-fns";
+import { enUS } from "date-fns/locale/en-US";
+import { useFetchData } from "@/hooks/use-query";
+import { useState } from "react";
 
-// const localizer = dayjsLocalizer(dayjs);
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-// Static event list
-// const myEventsList = [
-//   {
-//     title: "Team Meeting",
-//     start: new Date(2025, 0, 10, 10, 0), // January 10, 2025, 10:00 AM
-//     end: new Date(2025, 0, 10, 11, 0), // January 10, 2025, 11:00 AM
-//   },
-//   {
-//     title: "Code Review",
-//     start: new Date(2025, 0, 12, 14, 0), // January 12, 2025, 2:00 PM
-//     end: new Date(2025, 0, 12, 15, 0), // January 12, 2025, 3:00 PM
-//   },
-//   {
-//     title: "Lunch with Client",
-//     start: new Date(2025, 0, 14, 12, 30), // January 14, 2025, 12:30 PM
-//     end: new Date(2025, 0, 14, 13, 30), // January 14, 2025, 1:30 PM
-//   },
-// ];
+const locales = {
+  "en-US": enUS,
+};
 
-const ViewSessionPage = () => <div>Session Page</div>;
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+});
+
+type CalendarEvent = BigCalendarEvent & ISession;
+
+const ViewSessionPage = () => {
+  const { data, isLoading, error } = useFetchData("/session");
+
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null
+  );
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading data</div>;
+  }
+
+  // Transform data to match react-big-calendar's expected format
+  const events =
+    data?.map((session: ISession) => {
+      const startDate = new Date(session.date);
+      const [startHour, startMinute] = session.startTime.split(":").map(Number);
+      const [endHour, endMinute] = session.endTime.split(":").map(Number);
+
+      return {
+        title: session.title,
+        start: new Date(
+          startDate.getFullYear(),
+          startDate.getMonth(),
+          startDate.getDate(),
+          startHour,
+          startMinute
+        ),
+        end: new Date(
+          startDate.getFullYear(),
+          startDate.getMonth(),
+          startDate.getDate(),
+          endHour,
+          endMinute
+        ),
+        date: session.date,
+        userId: session.userId,
+        guests: session.guests,
+        description: session.description,
+      };
+    }) || [];
+
+  const handleEventClick = (event: CalendarEvent) => {
+    setSelectedEvent(event); // Store clicked event details
+    setIsDialogOpen(true); // Open dialog
+
+    console.log({ event });
+  };
+
+  return (
+    <div>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        onSelectEvent={handleEventClick}
+      />
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{selectedEvent?.title || "Event Details"}</DialogTitle>
+            <DialogDescription>
+              {selectedEvent ? (
+                <div>
+                  <p>
+                    <strong>User ID:</strong> {selectedEvent?.userId}
+                  </p>
+                  {/* <p>
+                    <strong>Guests:</strong>{" "}
+                    {selectedEvent?.guests?.length > 0
+                      ? selectedEvent.guests.join(", ")
+                      : "No guests invited"}
+                  </p> */}
+                  <p>
+                    <strong>Start Time:</strong>{" "}
+                    {format(selectedEvent?.start || "", "MMMM d, yyyy h:mm a")}
+                  </p>
+                  <p>
+                    <strong>End Time:</strong>{" "}
+                    {format(selectedEvent?.end || "", "MMMM d, yyyy h:mm a")}
+                  </p>
+                  <p>
+                    <strong>Description:</strong>{" "}
+                    {selectedEvent?.description || "No description available"}
+                  </p>
+                </div>
+              ) : (
+                "No event details available."
+              )}
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
 
 export default ViewSessionPage;
