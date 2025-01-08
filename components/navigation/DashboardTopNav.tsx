@@ -17,12 +17,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { auth } from "@/auth";
-import { Search, Menu } from "lucide-react";
+import { auth, signOut } from "@/auth";
+import { Search, Menu, LogOut } from "lucide-react";
 import NavLinks from "./NavLinks";
 
 const DashboardTopNav = async () => {
-  const { user = {} } = await auth();
+  const authResult = await auth();
+  const user = authResult?.user ?? { image: "", name: "" };
 
   return (
     <div className="h-[70px] w-full flex-between px-4 shadow-sm gap-6 md:gap-10">
@@ -58,6 +59,22 @@ const DashboardTopNav = async () => {
             <DropdownMenuSeparator />
             <DropdownMenuItem>Profile</DropdownMenuItem>
             <DropdownMenuItem>Team</DropdownMenuItem>
+            <DropdownMenuItem>
+              <form
+                action={async () => {
+                  "use server";
+
+                  await signOut({ redirectTo: "/" });
+                }}
+              >
+                <button
+                  type="submit"
+                  className="flex gap-1 items-center cursor-pointer"
+                >
+                  <LogOut size={12} className="text-gray-400" /> Logout
+                </button>
+              </form>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

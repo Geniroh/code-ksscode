@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 // import { ThemeProvider } from "@/context/Theme";
-import { Toaster } from "@/components/ui/toaster";
 import QueryWrapper from "@/components/QueryWrapper";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
   variable: "--font-inter",
