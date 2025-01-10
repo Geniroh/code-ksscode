@@ -24,6 +24,8 @@ model User {
     reviews       Review[]
     points        Points[]
     question      Question[]
+    answers       Answers[]
+    activityLog   ActivityLog[]
     // Optional for WebAuthn support
     Authenticator Authenticator[]
 
@@ -131,35 +133,68 @@ model Tags {
     name      String
     questions Int    @default(0)
 
+    question QuestionTag[]
+
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
 model Question {
-    id        String @id @default(auto()) @map("_id") @db.ObjectId
+    id        String        @id @default(auto()) @map("_id") @db.ObjectId
     title     String
     content   String
-    //   tags 
-    views     Int    @default(0)
-    upvotes   Int    @default(0)
-    downvotes Int    @default(0)
-    answers   Int    @default(0)
-    author    String @db.ObjectId
+    views     Int           @default(0)
+    upvotes   Int           @default(0)
+    downvotes Int           @default(0)
+    answers   Int           @default(0)
+    author    String        @db.ObjectId
+    score     Int?          @default(0)
+    questions QuestionTag[]
 
-    user User @relation(fields: [author], references: [id], onDelete: Cascade)
+    user   User      @relation(fields: [author], references: [id], onDelete: Cascade)
+    answer Answers[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
 model Answers {
-    id         String @id @default(auto()) @map("_id") @db.ObjectId
-    userId     String @db.ObjectId
-    questionId String @db.ObjectId
+    id         String  @id @default(auto()) @map("_id") @db.ObjectId
+    userId     String  @db.ObjectId
+    questionId String  @db.ObjectId
     content    String
-    upvotes    Int    @default(0)
+    upvotes    Int     @default(0)
     downvotes  Int
+    answered   Boolean @default(false)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ActivityLog {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    userId    String   @db.ObjectId
+    action    String
+    targetId  String?  @db.ObjectId
+    metadata  Json?
+    createdAt DateTime @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model QuestionTag {
+    id         String @id @default(auto()) @map("_id") @db.ObjectId
+    questionId String @db.ObjectId
+    tagId      String @db.ObjectId
+
+    question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+    tag      Tags     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([questionId, tagId]) // Ensure no duplicate relationships
 }

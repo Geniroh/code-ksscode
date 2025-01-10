@@ -30,7 +30,7 @@ const sidebarLinks = [
     iconSrc: MessageCircleQuestion,
   },
   {
-    title: "Suggestions",
+    title: "Suggestion",
     href: "dashboard/suggestions",
     desc: "Topic suggestion",
     iconSrc: MessageSquareDiff,
