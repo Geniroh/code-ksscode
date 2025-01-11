@@ -14,7 +14,7 @@ export default {
         secondary: "#0099FB",
         heading: "#0B3558",
         body: "#6F88A2",
-        offwhite: "#e8e8e8",
+        offwhite: "#f0f0f3",
         background: "var(--background)",
         foreground: "var(--foreground)",
       },

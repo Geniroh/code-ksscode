@@ -42,11 +42,11 @@ const questionSchema = Joi.object({
     "any.required": "Content is required.",
   }),
   tags: Joi.array()
-    .items(Joi.string()) // Assuming MongoDB ObjectId for tags
+    .items(Joi.string())
     .messages({
       "array.base": "Tags must be an array of strings.",
-      // "string.pattern.base": "Each tag must be a valid ObjectId.",
-    }),
+    })
+    .optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -72,6 +72,7 @@ export async function POST(req: NextRequest) {
     const { title, content, tags } = value;
 
     const question = await db.$transaction(async (tx) => {
+      // 1. Create the question
       const newQuestion = await tx.question.create({
         data: {
           title,
@@ -80,13 +81,50 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      // 2. Handle tags
       if (tags && tags.length > 0) {
-        const questionTags = tags.map((tagId: string) => ({
-          questionId: newQuestion.id,
-          tagId,
-        }));
+        const existingTags = await tx.tags.findMany({
+          where: {
+            name: { in: tags },
+          },
+        });
 
-        await tx.questionTag.createMany({ data: questionTags });
+        const existingTagNames = existingTags.map((tag) => tag.name);
+        const newTagNames = tags.filter(
+          (tag: string) => !existingTagNames.includes(tag)
+        );
+
+        const newTagArr = newTagNames.map((name: string) => ({ name }));
+
+        if (newTagArr.length > 0) {
+          await tx.tags.createMany({
+            data: newTagArr,
+          });
+        }
+
+        await tx.tags.updateMany({
+          where: {
+            name: { in: existingTagNames },
+          },
+          data: {
+            questions: { increment: 1 },
+          },
+        });
+
+        const tagIds = [
+          ...existingTags.map((tag) => tag.id),
+          ...(newTagNames.length > 0
+            ? await tx.tags.findMany({ where: { name: { in: newTagNames } } })
+            : []
+          ).map((tag) => tag.id),
+        ];
+
+        await tx.questionTag.createMany({
+          data: tagIds.map((tagId) => ({
+            questionId: newQuestion.id,
+            tagId,
+          })),
+        });
       }
 
       return newQuestion;

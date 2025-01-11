@@ -1,5 +1,8 @@
 "use client";
 
+import { MDXEditorMethods } from "@mdxeditor/editor";
+import dynamic from "next/dynamic";
+import React, { useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -14,10 +17,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
+import { Loader } from "lucide-react";
 import { usePostData } from "@/hooks/use-query";
-import TagCard from "../card/TagCard";
+import TagCard from "@/components/card/TagCard";
 
 const questionSchema = z.object({
   title: z
@@ -25,9 +28,6 @@ const questionSchema = z.object({
     .min(5, "Title must be at least 5 characters long")
     .max(255, "Title cannot exceed 255 characters"),
   content: z.string().min(10, "Content must be at least 10 characters long"),
-  // tags: z
-  //   .array(z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid tag ID"))
-  //   .optional(),
   tags: z
     .array(
       z
@@ -41,7 +41,14 @@ const questionSchema = z.object({
 
 type QuestionFormValues = z.infer<typeof questionSchema>;
 
+const Editor = dynamic(() => import("@/components/editor"), {
+  ssr: false,
+});
+
 const CreateQuestionForm = () => {
+  const editorRef = useRef<MDXEditorMethods>(null);
+  const [editorKey, setEditorKey] = useState(0);
+
   const form = useForm<QuestionFormValues>({
     resolver: zodResolver(questionSchema),
     defaultValues: {
@@ -55,6 +62,9 @@ const CreateQuestionForm = () => {
     onSuccess: () => {
       toast.success("Question created successfully!");
       form.reset();
+
+      form.setValue("content", "");
+      setEditorKey((prevKey) => prevKey + 1);
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
@@ -64,7 +74,7 @@ const CreateQuestionForm = () => {
 
   function onSubmit(values: QuestionFormValues) {
     console.log({ values });
-    // mutation.mutate(values);
+    mutation.mutate(values);
   }
 
   const handleTagRemove = (tag: string, field: { value: string[] }) => {
@@ -118,7 +128,11 @@ const CreateQuestionForm = () => {
             <FormItem>
               <FormLabel>Title</FormLabel>
               <FormControl>
-                <Input placeholder="Enter question title" {...field} />
+                <Input
+                  placeholder="Enter question title"
+                  className="placeholder:text-gray-400"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -132,37 +146,17 @@ const CreateQuestionForm = () => {
             <FormItem>
               <FormLabel>Content</FormLabel>
               <FormControl>
-                <Textarea
-                  placeholder="Enter detailed question content"
-                  {...field}
+                <Editor
+                  key={editorKey}
+                  value={field.value}
+                  editorRef={editorRef}
+                  fieldChange={field.onChange}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        {/* <FormField
-          control={form.control}
-          name="tags"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Tags (comma-separated)</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Enter tag IDs"
-                  {...field}
-                  onChange={(e) =>
-                    field.onChange(
-                      e.target.value.split(",").map((tag) => tag.trim())
-                    )
-                  }
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        /> */}
 
         <FormField
           control={form.control}
@@ -212,7 +206,11 @@ const CreateQuestionForm = () => {
           className="w-full bg-primary-gradient"
           disabled={mutation.isPending}
         >
-          {mutation.isPending ? "Submitting..." : "Submit"}
+          {mutation.isPending ? (
+            <Loader className="animate-spin" />
+          ) : (
+            <span>Submit</span>
+          )}
         </Button>
       </form>
     </Form>

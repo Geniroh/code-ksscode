@@ -10,6 +10,14 @@ interface ISession {
   userId: string;
   guests?: any[];
   image?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+interface ITag {
+  id?: string;
+  name: string;
+  questions: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
