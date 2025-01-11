@@ -5,7 +5,6 @@ import { startOfWeek, format, parse, getDay } from "date-fns";
 import { enUS } from "date-fns/locale/en-US";
 import { useFetchData } from "@/hooks/use-query";
 import { useState } from "react";
-
 import {
   Dialog,
   DialogContent,
@@ -13,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const locales = {
   "en-US": enUS,
@@ -35,6 +35,10 @@ const ViewSessionPage = () => {
     null
   );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [view, setView] = useState<
+    "month" | "week" | "day" | "agenda" | "work_week"
+  >("month");
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -77,7 +81,6 @@ const ViewSessionPage = () => {
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event); // Store clicked event details
     setIsDialogOpen(true); // Open dialog
-
     console.log({ event });
   };
 
@@ -90,7 +93,12 @@ const ViewSessionPage = () => {
         endAccessor="end"
         style={{ height: 500 }}
         onSelectEvent={handleEventClick}
+        date={currentDate}
+        view={view}
+        onNavigate={(date) => setCurrentDate(date)}
+        onView={(newView) => setView(newView)}
       />
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>

@@ -4,7 +4,7 @@
 
 body {
   font-family: "Inter", sans-serif;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 }
 
 :root {
@@ -41,11 +41,7 @@ body {
   }
 
   .search-input {
-    @apply flex-1 font-medium placeholder:font-medium placeholder:text-body/90 w-full h-auto outline-none bg-offwhite font-inter;
-  }
-
-  .rbc-day-bg {
-    @apply cursor-pointer;
+    @apply flex-1 font-medium placeholder:font-medium placeholder:text-offwhite w-full h-auto outline-none bg-offwhite font-inter;
   }
 
   .markdown {
