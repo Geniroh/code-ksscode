@@ -4,6 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import Joi from "joi";
 
+import type { Question, Tags } from "@prisma/client";
+
+type QuestionWithTags = Question & {
+  tags: Tags[];
+};
+
 export async function GET(req: NextRequest) {
   try {
     const session = await auth();
@@ -12,16 +18,36 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const questions = await db.question.findMany({
-      orderBy: {
-        createdAt: "desc",
+    const questionTags = await db.questionTag.findMany({
+      include: {
+        question: true,
+        tag: true,
       },
     });
 
-    return NextResponse.json(questions);
+    const groupedQuestions: Record<string, QuestionWithTags> =
+      questionTags.reduce((acc, current) => {
+        const questionId = current.question.id;
+
+        if (!acc[questionId]) {
+          acc[questionId] = {
+            ...current.question,
+            tags: [],
+          };
+        }
+
+        acc[questionId].tags.push(current.tag);
+
+        return acc;
+      }, {} as Record<string, QuestionWithTags>);
+
+    const result = Object.values(groupedQuestions);
+
+    return NextResponse.json(result);
   } catch (error) {
+    console.error("Failed to fetch questions and tags:", error);
     return NextResponse.json(
-      { error: "Failed to get questions" },
+      { error: "Failed to get questions and tags" },
       { status: 500 }
     );
   }

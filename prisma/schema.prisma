@@ -147,6 +147,7 @@ model Question {
     upvotes   Int           @default(0)
     downvotes Int           @default(0)
     answers   Int           @default(0)
+    answered  Boolean       @default(false)
     author    String        @db.ObjectId
     score     Int?          @default(0)
     questions QuestionTag[]
@@ -159,13 +160,12 @@ model Question {
 }
 
 model Answers {
-    id         String  @id @default(auto()) @map("_id") @db.ObjectId
-    userId     String  @db.ObjectId
-    questionId String  @db.ObjectId
+    id         String @id @default(auto()) @map("_id") @db.ObjectId
+    userId     String @db.ObjectId
+    questionId String @db.ObjectId
     content    String
-    upvotes    Int     @default(0)
+    upvotes    Int    @default(0)
     downvotes  Int
-    answered   Boolean @default(false)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

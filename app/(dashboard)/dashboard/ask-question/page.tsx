@@ -1,3 +1,4 @@
+"use client";
 import CreateQuestionForm from "@/components/form/CreateQuestionForm";
 import React from "react";
 

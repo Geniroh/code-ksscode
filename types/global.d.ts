@@ -21,3 +21,18 @@ interface ITag {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+interface IQuestionWithTag {
+  id: string;
+  title: string;
+  content: string;
+  views: number;
+  upvotes: number;
+  downvotes: number;
+  answers: number;
+  author: string;
+  score: number;
+  createdAt: Date;
+  updatedAt: Date;
+  tags: ITag[];
+}

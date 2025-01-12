@@ -25,8 +25,8 @@ const sidebarLinks = [
   },
   {
     title: "Questions",
-    href: "dashboard/ask-question",
-    desc: "Ask a question",
+    href: "dashboard/questions",
+    desc: "Answer or ask a question",
     iconSrc: MessageCircleQuestion,
   },
   {

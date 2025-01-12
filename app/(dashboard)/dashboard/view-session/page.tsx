@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import { RefreshCw } from "lucide-react";
 
 const locales = {
   "en-US": enUS,
@@ -39,10 +40,6 @@ const ViewSessionPage = () => {
     "month" | "week" | "day" | "agenda" | "work_week"
   >("month");
   const [currentDate, setCurrentDate] = useState(new Date());
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
     return <div>Error loading data</div>;
@@ -86,9 +83,15 @@ const ViewSessionPage = () => {
 
   return (
     <div>
+      {isLoading && (
+        <div className="flex gap-2 items-center leading-6 py-2 text-sm">
+          <RefreshCw size={12} className="text-heading animate-spin" /> Getting
+          Sessions...
+        </div>
+      )}
       <Calendar
         localizer={localizer}
-        events={events}
+        events={isLoading ? [] : events}
         startAccessor="start"
         endAccessor="end"
         style={{ height: 500 }}

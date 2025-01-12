@@ -12,14 +12,50 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { searchParams } = new URL(req.url);
+    const dateParam = searchParams.get("date");
+    const limitParam = searchParams.get("limit");
+
+    if (dateParam) {
+      const dateSchema = Joi.date();
+      const { error } = dateSchema.validate(dateParam);
+
+      if (error) {
+        return NextResponse.json(
+          { error: "Invalid date parameter" },
+          { status: 400 }
+        );
+      }
+    }
+
+    let limit = undefined;
+    if (limitParam) {
+      const limitSchema = Joi.number().integer().positive();
+      const { error, value } = limitSchema.validate(limitParam);
+
+      if (error) {
+        return NextResponse.json(
+          { error: "Invalid limit parameter" },
+          { status: 400 }
+        );
+      }
+
+      limit = value;
+    }
+
+    const dateFilter = dateParam ? { date: { gt: new Date(dateParam) } } : {};
+
     const sessions = await db.session.findMany({
+      where: dateFilter,
       orderBy: {
-        createdAt: "desc",
+        date: "asc",
       },
+      take: limit,
     });
 
     return NextResponse.json(sessions);
   } catch (error) {
+    console.error("Error fetching sessions:", error);
     return NextResponse.json(
       { error: "Failed to get sessions" },
       { status: 500 }
