@@ -36,3 +36,44 @@ interface IQuestionWithTag {
   updatedAt: Date;
   tags: ITag[];
 }
+
+interface IUser {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified?: boolean | null;
+  image: string;
+  role: "USER" | "ADMIN";
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface IQuestionWithAnswersAndTags {
+  id: string;
+  title: string;
+  content: string;
+  views: number;
+  upvotes: number;
+  downvotes: number;
+  answers: number;
+  answered: boolean;
+  author: string;
+  score: number;
+  createdAt: Date;
+  updatedAt: Date;
+  user?: IUser;
+  answer: any;
+  tags: ITag[];
+}
+
+interface IAnswer {
+  id: string;
+  userId: string;
+  questionId: string;
+  content: string;
+  upvotes: number;
+  downvotes: number;
+  createdAt: Date;
+  updatedAt: Date;
+  user?: IUser;
+}
