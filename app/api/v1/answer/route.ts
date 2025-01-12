@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { db } from "@/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import Joi from "joi";
