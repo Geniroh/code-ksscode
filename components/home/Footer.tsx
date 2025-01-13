@@ -12,16 +12,16 @@ const Footer = () => {
           <Image
             src="/images/logo.png"
             alt="Codematic Logo"
-            height={42}
-            width={42}
+            height={32}
+            width={32}
           />
 
-          <span className="font-space-grotesk my-primary-text-gradient text-[32px] font-bold">
+          <span className="font-space-grotesk my-primary-text-gradient text-[20px] font-bold">
             Ksscode
           </span>
         </div>
 
-        <div className="my-p-regular">&copy; {currentYear}</div>
+        <div className="text-body text-sm">&copy; {currentYear}</div>
       </div>
     </footer>
   );

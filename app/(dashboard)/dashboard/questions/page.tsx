@@ -10,9 +10,6 @@ import TagCard from "@/components/card/TagCard";
 
 const QuestionPage = () => {
   const { data: questions } = useFetchData(`/question`);
-
-  console.log({ questions });
-
   return (
     <div>
       <div className="flex-between">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 // import { ThemeProvider } from "@/context/Theme";
+import { SessionProvider } from "next-auth/react";
 import QueryWrapper from "@/components/QueryWrapper";
 import { Toaster } from "react-hot-toast";
 
@@ -37,16 +38,18 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${spaceGrotesk.variable} antialiased`}
       >
-        <QueryWrapper>
-          {/* <ThemeProvider
+        <SessionProvider>
+          <QueryWrapper>
+            {/* <ThemeProvider
           attribute="class"
           defaultTheme="light"
           // enableSystem
           disableTransitionOnChange
         > */}
-          {children}
-          {/* </ThemeProvider> */}
-        </QueryWrapper>
+            {children}
+            {/* </ThemeProvider> */}
+          </QueryWrapper>
+        </SessionProvider>
         <Toaster />
       </body>
     </html>

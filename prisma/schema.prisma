@@ -196,5 +196,14 @@ model QuestionTag {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@unique([questionId, tagId]) // Ensure no duplicate relationships
+    @@unique([questionId, tagId])
+}
+
+model Suggestions {
+    id             String   @id @default(auto()) @map("_id") @db.ObjectId
+    title          String
+    description    String?
+    suggestedUsers String[]
+    tags           String[]
+    taken          Boolean  @default(false)
 }

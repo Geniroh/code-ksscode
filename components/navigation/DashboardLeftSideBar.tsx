@@ -5,7 +5,7 @@ import NavLinks from "./NavLinks";
 
 const DashboardLeftSideBar = () => {
   return (
-    <section className="hidden sm:flex flex-col sm:w-[90px] lg:w-[246px] px-4 border-r border-gray-200 bg-white shadow-sm">
+    <section className="hidden sm:flex flex-col sm:w-[90px] lg:w-[216px] px-4 border-r border-gray-200 bg-white shadow-sm">
       {/* Logo Section */}
       <div className="h-[70px] flex items-center">
         <Link href="/">

@@ -33,7 +33,7 @@ export default function Hero() {
                 />
               </div>
               <Link href="register" className="text-md">
-                Sign up with workspace
+                Sign up with Google
               </Link>
             </Button>
           </div>
@@ -47,9 +47,9 @@ export default function Hero() {
       >
         <div className="relative w-full min-h-[500px] p-8 rounded-lg overflow-hidden flex justify-center items-center">
           {/* ADD Infinite pulse animation */}
-          <div className="absolute bg-red-400 w-60 animate-pulse-slow h-48 rounded-lg shadow-lg top-[10%] left-[5%]"></div>
-          <div className="absolute bg-green-500 w-60 h-60 animate-pulse-slow rounded-lg shadow-lg top-[50%] left-[30%]"></div>
-          <div className="absolute bg-blue-500 w-60 animate-pulse-slow h-[200px] rounded-lg shadow-lg top-[20%] right-[10%]"></div>
+          <div className="absolute bg-red-400 w-60  h-48 rounded-lg shadow-lg top-[10%] left-[5%]"></div>
+          <div className="absolute bg-green-500 w-60 h-60 rounded-lg shadow-lg top-[50%] left-[30%]"></div>
+          <div className="absolute bg-blue-500 w-60 h-[200px] rounded-lg shadow-lg top-[20%] right-[10%]"></div>
         </div>
       </motion.div>
     </section>

@@ -68,7 +68,7 @@ const NavLinks = ({ showTextOnSm = false }: NavLinksProps) => {
               }`}
             >
               <p className="font-semibold">{link.title}</p>
-              <p className="text-sm text-gray-500">{link.desc}</p>
+              {/* <p className="text-sm text-gray-500">{link.desc}</p> */}
             </div>
           </Link>
         );
