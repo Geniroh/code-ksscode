@@ -78,11 +78,10 @@ const ViewSessionPage = () => {
   const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event); // Store clicked event details
     setIsDialogOpen(true); // Open dialog
-    console.log({ event });
   };
 
   return (
-    <div>
+    <div className="bg-white p-6">
       {isLoading && (
         <div className="flex gap-2 items-center leading-6 py-2 text-sm">
           <RefreshCw size={12} className="text-heading animate-spin" /> Getting

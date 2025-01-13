@@ -10,10 +10,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       </div>
       <div className="w-full">
         <DashboardTopNav />
-        <div className="p-4 md:p-6 bg-offwhite flex w-full h-[calc(100vh-70px)]">
-          <div className="bg-white rounded-lg shadow-sm p-6 w-full overflow-y-auto">
-            {children}
-          </div>
+        <div className="p-4 md:p-6 bg-offwhite flex w-full h-[calc(100vh-70px)] overflow-y-auto ">
+          <div className=" p-6 pt-3 w-full">{children}</div>
         </div>
       </div>
     </div>

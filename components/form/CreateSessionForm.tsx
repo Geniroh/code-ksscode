@@ -4,8 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Loader } from "lucide-react";
-
+import { CalendarIcon, Loader, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -23,9 +22,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
-import { usePostData } from "@/hooks/use-query";
+import { useFetchData, usePostData } from "@/hooks/use-query";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 
 const sessionSchema = z
   .object({
@@ -48,7 +49,7 @@ const sessionSchema = z
         })
       )
       .optional(),
-    guests: z.array(z.string().email()).optional(),
+    guests: z.array(z.string()).optional(), // Changed from email to string to match user IDs
     image: z.string().url({ message: "Not a valid URL" }).optional(),
   })
   .refine(
@@ -78,6 +79,10 @@ const sessionSchema = z
 type SessionFormValues = z.infer<typeof sessionSchema>;
 
 const BookSessionForm = () => {
+  const { data, isLoading } = useFetchData("/user");
+  const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
+  const [allSelected, setAllSelected] = useState(false);
+
   const form = useForm<SessionFormValues>({
     resolver: zodResolver(sessionSchema),
     defaultValues: {
@@ -88,10 +93,17 @@ const BookSessionForm = () => {
     },
   });
 
+  useEffect(() => {
+    if (data) {
+      setFilteredUsers(data);
+    }
+  }, [data]);
+
   const mutation = usePostData("/session", {
     onSuccess: () => {
       toast.success("Session created successfully!");
       form.reset();
+      setAllSelected(false);
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
@@ -99,24 +111,57 @@ const BookSessionForm = () => {
     },
   });
 
+  const handleSearch = (query: string) => {
+    if (!data) return;
+    const filtered = data.filter((user: IUser) =>
+      user.name.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    setAllSelected(checked);
+    const allUserIds = checked
+      ? filteredUsers.map((user: IUser) => user.email)
+      : [];
+    form.setValue("guests", allUserIds);
+  };
+
+  const handleToggleUser = (email: string) => {
+    const currentGuests = form.getValues("guests") || [];
+    const newGuests = currentGuests.includes(email)
+      ? currentGuests.filter((em) => em !== email)
+      : [...currentGuests, email];
+
+    form.setValue("guests", newGuests, { shouldValidate: true });
+    setAllSelected(newGuests.length === filteredUsers.length);
+  };
+
   function onSubmit(values: SessionFormValues) {
     mutation.mutate(values);
   }
 
   return (
     <Form {...form}>
-      <h1 className="text-2xl font-bold mb-4 text-heading">
+      <h1 className="text-xl font-bold text-heading border-b pb-2">
         Create a New Session
       </h1>
+      <div className="mt-3 text-sm leading-5 text-body font-light mb-4">
+        A knowledge-sharing session is a dedicated time for colleagues to learn
+        from each other. It&apos;s a chance to present a new skill, discuss a
+        best practice, explore a project&apos;s learnings, or offer guidance on
+        a specific challenge. By creating a session, you&apos;re facilitating
+        learning and collaboration within the team.
+      </div>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-400">Title</FormLabel>
+              <FormLabel className="text-heading">Title</FormLabel>
               <FormControl>
-                <Input placeholder="Enter title" {...field} />
+                <Input placeholder="Enter your session title" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -127,22 +172,26 @@ const BookSessionForm = () => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-gray-400">Description</FormLabel>
+              <FormLabel className="text-heading">Description</FormLabel>
               <FormControl>
-                <Textarea {...field} placeholder="Enter description" />
+                <Textarea
+                  {...field}
+                  rows={5}
+                  placeholder="Please describe more about this session"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 md:gap-10">
+        <div className="flex items-center gap-6 md:gap-10 flex-wrap">
           <div>
             <FormField
               control={form.control}
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="text-gray-400">Pick a date</FormLabel>
+                  <FormLabel className="text-heading">Pick a date</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -154,9 +203,13 @@ const BookSessionForm = () => {
                           )}
                         >
                           {field.value ? (
-                            format(field.value, "PPP")
+                            <span className=" text-sm">
+                              {format(field.value, "PPP")}
+                            </span>
                           ) : (
-                            <span>Pick a date</span>
+                            <span className="text-sm text-[#69748B]">
+                              Pick a date
+                            </span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -177,15 +230,15 @@ const BookSessionForm = () => {
               )}
             />
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-4">
             <FormField
               control={form.control}
               name="startTime"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-400">Start Time</FormLabel>
+                  <FormLabel className="text-heading">Start Time</FormLabel>
                   <FormControl>
-                    <Input type="time" {...field} />
+                    <Input type="time" {...field} className="max-w-[150px]" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -197,9 +250,9 @@ const BookSessionForm = () => {
               name="endTime"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-gray-400">End Time</FormLabel>
+                  <FormLabel className="text-heading">End Time</FormLabel>
                   <FormControl>
-                    <Input type="time" {...field} />
+                    <Input type="time" {...field} className="max-w-[150px]" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -207,9 +260,58 @@ const BookSessionForm = () => {
             />
           </div>
         </div>
+
+        <div>
+          <FormLabel>Guests</FormLabel>
+          {isLoading ? (
+            <div className="flex items-center gap-2">
+              <RefreshCw size={16} className="animate-spin" />
+              Loading guest list...
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <Input
+                  placeholder="Search guests"
+                  onChange={(e) => handleSearch(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                />
+                <span className="text-sm">Select All</span>
+              </div>
+              <ul className="max-h-48 overflow-y-auto space-y-2">
+                {filteredUsers?.map((user: IUser) => (
+                  <li key={user.id} className="flex items-center gap-4">
+                    <Image
+                      src={user.image}
+                      alt={user.name}
+                      className="w-8 h-8 rounded-full"
+                      width={30}
+                      height={30}
+                    />
+                    <span>{user.name}</span>
+                    <input
+                      type="checkbox"
+                      checked={
+                        form.getValues("guests")?.includes(user.email) || false
+                      }
+                      onChange={() => handleToggleUser(user.email)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
         <Button
           type="submit"
-          size={"lg"}
+          size="lg"
           className="w-full bg-primary-gradient"
           disabled={mutation.isPending}
         >

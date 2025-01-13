@@ -1,7 +1,7 @@
 import { techMap } from "@/constant/techMap";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, getHours } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -49,4 +49,16 @@ export const getTimeStamp = (dateString: string) => {
     }
   }
   return "just now";
+};
+
+export const getTimeOfDay = (date: Date) => {
+  const hours = getHours(date);
+
+  if (hours >= 5 && hours < 12) {
+    return "morning";
+  } else if (hours >= 12 && hours < 17) {
+    return "afternoon";
+  } else {
+    return "evening";
+  }
 };
