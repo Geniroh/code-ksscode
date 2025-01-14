@@ -112,12 +112,12 @@ const DashboardPage = () => {
             <CardContent>
               <div className="flex gap-2 items-center leading-6 py-2 text-sm">
                 <RefreshCw size={12} className="text-heading animate-spin" />{" "}
-                Getting Sessions...
+                Loading help requests...
               </div>
             </CardContent>
           ) : (
             <>
-              {data?.length > 0 ? (
+              {false ? (
                 <CardContent>
                   <ul className="space-y-2 min-h-[200px]">
                     {data?.map((session: ISession) => (
