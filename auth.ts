@@ -13,12 +13,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
-      // authorization: {
-      //   params: {
-      //     scope:
-      //       "https://www.googleapis.com/auth/calendar openid email profile",
-      //   },
-      // },
+      authorization: {
+        params: {
+          scope:
+            "https://www.googleapis.com/auth/calendar openid email profile",
+        },
+      },
     }),
   ],
   secret: process.env.AUTH_SECRET,

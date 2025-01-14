@@ -16,15 +16,24 @@ async function getAccessToken(userId: string) {
   return account.access_token;
 }
 
-function createDateTimeString(date: string | Date, timeString: string): Date {
-  const baseDate = typeof date === "string" ? new Date(date) : date;
+function createEventDateTime(baseDate: Date | string, timeStr: string): string {
+  try {
+    const date = baseDate instanceof Date ? baseDate : new Date(baseDate);
 
-  const [hours, minutes] = timeString.split(":").map(Number);
+    const [hours, minutes] = timeStr.split(":").map(Number);
 
-  const dateTime = new Date(baseDate);
-  dateTime.setHours(hours, minutes, 0, 0);
+    const eventDate = new Date(date);
+    eventDate.setHours(hours, minutes, 0, 0);
 
-  return dateTime;
+    return eventDate.toISOString();
+  } catch (error) {
+    console.error("Error creating event datetime:", {
+      baseDate,
+      timeStr,
+      error,
+    });
+    throw new Error(`Invalid date/time combination: ${baseDate} ${timeStr}`);
+  }
 }
 
 export async function createCalendarEvent({
@@ -41,7 +50,7 @@ export async function createCalendarEvent({
   description?: string;
   startTime: string; // Format: "HH:mm"
   endTime: string; // Format: "HH:mm"
-  date: string | Date;
+  date: Date | string;
   guests?: string[];
 }) {
   try {
@@ -52,19 +61,19 @@ export async function createCalendarEvent({
       auth: accessToken,
     });
 
-    const startDateTime = createDateTimeString(date, startTime);
-    const endDateTime = createDateTimeString(date, endTime);
+    // Get local timezone
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
     const event = {
       summary: title,
       description,
       start: {
-        dateTime: startDateTime.toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        dateTime: createEventDateTime(date, startTime),
+        timeZone,
       },
       end: {
-        dateTime: endDateTime.toISOString(),
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        dateTime: createEventDateTime(date, endTime),
+        timeZone,
       },
       attendees: guests?.map((email) => ({ email })),
       reminders: {
@@ -79,14 +88,8 @@ export async function createCalendarEvent({
     });
 
     return response.data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (error.code === 401) {
-      throw new Error(
-        "Calendar access token expired. User needs to re-authenticate."
-      );
-    }
-    console.error("Error creating calendar event:", error);
+  } catch (error) {
+    console.error("Failed to create calendar event:", error);
     throw error;
   }
 }

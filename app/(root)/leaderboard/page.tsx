@@ -1,11 +1,4 @@
-// import React from "react";
-
-// const LeaderBoardPage = () => {
-//   return <div>LeaderBoardPage</div>;
-// };
-
-// export default LeaderBoardPage;
-
+"use client";
 import React from "react";
 import {
   Table,
@@ -17,6 +10,8 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { useFetchData } from "@/hooks/use-query";
+import LeaderboardSkeleton from "@/components/skeleton/LeaderboardPageSkeleton";
 
 type LeaderboardEntry = {
   rank: number;
@@ -25,37 +20,6 @@ type LeaderboardEntry = {
   avatar: string;
   change: "up" | "down" | "same";
 };
-
-const leaderboardData: LeaderboardEntry[] = [
-  { rank: 1, name: "Alice Johnson", score: 9850, avatar: "AJ", change: "up" },
-  { rank: 2, name: "Bob Smith", score: 9720, avatar: "BS", change: "same" },
-  { rank: 3, name: "Charlie Brown", score: 9680, avatar: "CB", change: "up" },
-  { rank: 4, name: "Diana Prince", score: 9550, avatar: "DP", change: "down" },
-  { rank: 5, name: "Ethan Hunt", score: 9400, avatar: "EH", change: "up" },
-  {
-    rank: 6,
-    name: "Fiona Gallagher",
-    score: 9350,
-    avatar: "FG",
-    change: "same",
-  },
-  {
-    rank: 7,
-    name: "George Michael",
-    score: 9200,
-    avatar: "GM",
-    change: "down",
-  },
-  { rank: 8, name: "Hannah Montana", score: 9150, avatar: "HM", change: "up" },
-  { rank: 9, name: "Ian Malcolm", score: 9000, avatar: "IM", change: "same" },
-  {
-    rank: 10,
-    name: "Julia Roberts",
-    score: 8950,
-    avatar: "JR",
-    change: "down",
-  },
-];
 
 const RankChange: React.FC<{ change: "up" | "down" | "same" }> = ({
   change,
@@ -71,11 +35,33 @@ const RankChange: React.FC<{ change: "up" | "down" | "same" }> = ({
 };
 
 const LeaderboardTable = () => {
+  const { data, isLoading, isError } = useFetchData("/leaderboard");
+
+  if (isLoading) {
+    return <LeaderboardSkeleton />;
+  }
+
+  if (isError || !data) {
+    return <p>Error loading leaderboard.</p>;
+  }
+
+  // Transform the API data into the required format
+  const leaderboardData: LeaderboardEntry[] = data.leaderboard.map(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (user: any) => ({
+      rank: user.rank,
+      name: user.name,
+      score: user.metrics.totalPoints,
+      avatar: user.image || user.name.slice(0, 2), // Fallback to initials
+      change: "same", // Replace with actual logic if change data is available
+    })
+  );
+
   return (
     <div className="max-w-3xl mx-auto">
       <div className="my-container py-10">
         <h2 className="text-2xl font-bold mb-4 text-primary">Leaderboard</h2>
-        <div className="border rounded-lg overflow-hidden">
+        <div className="border rounded-lg overflow-hidden min-h-[50vh]">
           <Table>
             <TableHeader>
               <TableRow>
@@ -97,11 +83,10 @@ const LeaderboardTable = () => {
                   <TableCell>
                     <div className="flex items-center">
                       <Avatar className="h-8 w-8 mr-2">
-                        <AvatarImage
-                          src={`https://avatar.vercel.sh/${entry.avatar}`}
-                          alt={entry.name}
-                        />
-                        <AvatarFallback>{entry.avatar}</AvatarFallback>
+                        <AvatarImage src={entry.avatar} alt={entry.name} />
+                        <AvatarFallback>
+                          {entry.name.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
                       </Avatar>
                       {entry.name}
                     </div>

@@ -7,7 +7,7 @@ const Footer = () => {
 
   return (
     <footer className="w-full h-[150px] bg-primary-gradient">
-      <div className="w-full h-full bg-white rounded-b-[50px] flex flex-col items-center justify-center ">
+      <div className="w-full h-full bg-white flex flex-col items-center justify-center ">
         <div className="flex items-end gap-1">
           <Image
             src="/images/logo.png"
