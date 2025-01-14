@@ -56,17 +56,18 @@ model Account {
 }
 
 model Session {
-    id          String     @id @default(auto()) @map("_id") @db.ObjectId
-    title       String
-    description String?
-    date        DateTime
-    startTime   String
-    endTime     String
-    userId      String     @db.ObjectId
-    guests      String[]
-    image       String?
-    reviews     Review[]
-    Resource    Resource[]
+    id              String     @id @default(auto()) @map("_id") @db.ObjectId
+    title           String
+    description     String?
+    date            DateTime
+    startTime       String
+    endTime         String
+    userId          String     @db.ObjectId
+    guests          String[]
+    image           String?
+    calendarEventId String?
+    reviews         Review[]
+    Resource        Resource[]
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

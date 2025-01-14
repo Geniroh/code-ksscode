@@ -49,8 +49,10 @@ const ViewSessionPage = () => {
   const events =
     data?.map((session: ISession) => {
       const startDate = new Date(session.date);
-      const [startHour, startMinute] = session.startTime.split(":").map(Number);
-      const [endHour, endMinute] = session.endTime.split(":").map(Number);
+      const [startHour, startMinute] = session?.startTime
+        ?.split(":")
+        .map(Number);
+      const [endHour, endMinute] = session?.endTime?.split(":").map(Number);
 
       return {
         title: session.title,
