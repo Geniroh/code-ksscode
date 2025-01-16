@@ -4,8 +4,6 @@ import { X } from "lucide-react";
 
 import { getDeviconClassName } from "@/lib/utils";
 
-import { Badge } from "../ui/badge";
-
 interface Props {
   _id: string;
   name: string;
@@ -35,9 +33,9 @@ const TagCard = ({
 
   const Content = (
     <>
-      <Badge className="flex flex-row gap-2 bg-white text-black rounded-md border-none px-4 py-2 uppercase text-xs">
-        <div className="flex-center space-x-2">
-          <i className={`${iconClass} text-sm`}></i>
+      <div className="flex flex-row gap-2 bg-white text-black rounded-md border-none uppercase text-[10px]">
+        <div className="flex-center space-x-1">
+          <i className={`${iconClass} text-[10px]`}></i>
           <span>{name}</span>
         </div>
 
@@ -49,7 +47,7 @@ const TagCard = ({
             onClick={handleRemove}
           />
         )}
-      </Badge>
+      </div>
 
       {showCount && (
         <p className="small-medium text-dark500_light700">{questions}</p>

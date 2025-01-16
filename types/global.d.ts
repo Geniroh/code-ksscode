@@ -8,7 +8,8 @@ interface ISession {
   startTime: string;
   endTime: string;
   userId: string;
-  guests?: any[];
+  user?: IUser;
+  guests: string[];
   image?: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -31,6 +32,7 @@ interface IQuestionWithTag {
   downvotes: number;
   answers: number;
   author: string;
+  user?: IUser;
   score: number;
   createdAt: Date;
   updatedAt: Date;

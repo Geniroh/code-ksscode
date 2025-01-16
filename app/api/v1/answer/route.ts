@@ -2,6 +2,8 @@ import { db } from "@/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import Joi from "joi";
 import { auth } from "@/auth";
+import { awardPoints } from "@/actions/points";
+import { PointScale } from "@/constant/pointscale";
 
 const postSchema = Joi.object({
   content: Joi.string().required(),
@@ -51,6 +53,14 @@ export async function POST(req: NextRequest) {
         },
       });
     }
+
+    await awardPoints({
+      userId,
+      points: PointScale.POINTS_FOR_ANSWER,
+      type: "ANSWER_POINTS",
+      reason: "Provided an answer",
+      targetId: newAnswer.id,
+    });
 
     return NextResponse.json(newAnswer, { status: 201 });
   } catch (error) {

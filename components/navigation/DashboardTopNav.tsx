@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { auth, signOut } from "@/auth";
-import { Search, Menu, LogOut } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 import NavLinks from "./NavLinks";
 import { Grip } from "lucide-react";
 import Link from "next/link";
@@ -34,7 +34,7 @@ const DashboardTopNav = async () => {
           <div className="text-heading text-2xl font-bold">
             <Link href="/dashboard">Dashboard</Link>
           </div>
-          <div className="bg-offwhite h-[40px] hidden items-center px-4 py-2 md:min-w-[400px] rounded-2xl sm:flex gap-2 focus:outline-none outline-none">
+          {/* <div className="bg-offwhite h-[40px] hidden items-center px-4 py-2 md:min-w-[400px] rounded-2xl sm:flex gap-2 focus:outline-none outline-none">
             <Search className="text-heading" />
             <input
               type="text"
@@ -42,7 +42,7 @@ const DashboardTopNav = async () => {
               className="search-input"
               placeholder="Search Start"
             />
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="flex gap-4">

@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import { RefreshCw } from "lucide-react";
 
@@ -31,6 +32,8 @@ type CalendarEvent = BigCalendarEvent & ISession;
 
 const ViewSessionPage = () => {
   const { data, isLoading, error } = useFetchData("/session");
+
+  console.log({ data });
 
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null
@@ -109,27 +112,44 @@ const ViewSessionPage = () => {
             <DialogTitle>{selectedEvent?.title || "Event Details"}</DialogTitle>
             <DialogDescription>
               {selectedEvent ? (
-                <div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    {selectedEvent?.user?.image}
+                    <Avatar className="">
+                      <AvatarImage
+                        src={selectedEvent?.user?.image}
+                        alt={selectedEvent?.user?.name || "User Avatar"}
+                      />
+                      <AvatarFallback>
+                        {selectedEvent?.user?.name
+                          ? selectedEvent?.user?.name.charAt(0).toUpperCase()
+                          : "?"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>{selectedEvent?.user?.name}</div>
+                  </div>
+
+                  <div>
+                    <h1 className=" text-heading">Description:</h1>
+                    {selectedEvent?.description || "No description available"}
+                  </div>
+
+                  <div>
+                    <h1 className=" text-heading">Date:</h1>
+                    {format(selectedEvent?.date || "", "MMMM d, yyyy")}
+                  </div>
+
+                  <div>
+                    <h1 className=" text-heading">Duration:</h1>
+                    {format(selectedEvent?.start || "", "h:mm a")} -{" "}
+                    {format(selectedEvent?.end || "", "h:mm a")}
+                  </div>
+
                   <p>
-                    <strong>User ID:</strong> {selectedEvent?.userId}
-                  </p>
-                  {/* <p>
-                    <strong>Guests:</strong>{" "}
+                    <h1 className=" text-heading">Guests:</h1>
                     {selectedEvent?.guests?.length > 0
                       ? selectedEvent.guests.join(", ")
                       : "No guests invited"}
-                  </p> */}
-                  <p>
-                    <strong>Start Time:</strong>{" "}
-                    {format(selectedEvent?.start || "", "MMMM d, yyyy h:mm a")}
-                  </p>
-                  <p>
-                    <strong>End Time:</strong>{" "}
-                    {format(selectedEvent?.end || "", "MMMM d, yyyy h:mm a")}
-                  </p>
-                  <p>
-                    <strong>Description:</strong>{" "}
-                    {selectedEvent?.description || "No description available"}
                   </p>
                 </div>
               ) : (

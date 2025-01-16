@@ -20,7 +20,11 @@ export async function GET(req: NextRequest) {
 
     const questionTags = await db.questionTag.findMany({
       include: {
-        question: true,
+        question: {
+          include: {
+            user: true,
+          },
+        },
         tag: true,
       },
     });

@@ -5,7 +5,7 @@ import {
   SquarePlus,
   CalendarRange,
   MessageCircleQuestion,
-  MessageSquareDiff,
+  // MessageSquareDiff,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -29,12 +29,12 @@ const sidebarLinks = [
     desc: "Answer or ask a question",
     iconSrc: MessageCircleQuestion,
   },
-  {
-    title: "Suggestions",
-    href: "dashboard/suggestion",
-    desc: "Topic suggestion",
-    iconSrc: MessageSquareDiff,
-  },
+  // {
+  //   title: "Suggestions",
+  //   href: "dashboard/suggestion",
+  //   desc: "Topic suggestion",
+  //   iconSrc: MessageSquareDiff,
+  // },
 ];
 
 interface NavLinksProps {

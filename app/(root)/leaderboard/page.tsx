@@ -46,7 +46,7 @@ const LeaderboardTable = () => {
   }
 
   // Transform the API data into the required format
-  const leaderboardData: LeaderboardEntry[] = data.leaderboard.map(
+  const leaderboardData: LeaderboardEntry[] = data?.leaderboard?.map(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (user: any) => ({
       rank: user.rank,
@@ -72,7 +72,7 @@ const LeaderboardTable = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {leaderboardData.map((entry) => (
+              {leaderboardData?.map((entry) => (
                 <TableRow key={entry.rank}>
                   <TableCell className="font-medium">
                     {entry.rank === 1 && <Badge className="mr-2">🏆</Badge>}

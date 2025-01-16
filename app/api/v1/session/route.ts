@@ -4,6 +4,8 @@ import Joi from "joi";
 import { auth } from "@/auth";
 import { sendMail } from "@/actions/mail";
 import { createCalendarEvent } from "@/actions/calendar";
+import { awardPoints } from "@/actions/points";
+import { PointScale } from "@/constant/pointscale";
 
 export async function GET(req: NextRequest) {
   try {
@@ -48,6 +50,9 @@ export async function GET(req: NextRequest) {
 
     const sessions = await db.session.findMany({
       where: dateFilter,
+      include: {
+        user: true,
+      },
       orderBy: {
         date: "asc",
       },
@@ -103,19 +108,68 @@ const postSchema = Joi.object({
 //     }
 
 //     const userId = session.user.id;
+//     const POINTS_FOR_SESSION = 50; // Define points constant
 
-//     // Create session in database
-//     const newSession = await db.session.create({
-//       data: {
-//         title,
-//         description,
-//         date: new Date(date),
-//         startTime,
-//         endTime,
-//         userId: userId.toString(),
-//         guests: guests || [],
-//         image,
-//       },
+//     // Use a transaction to ensure both session creation and points are updated atomically
+//     const [newSession, pointsRecord] = await db.$transaction(async (tx) => {
+//       // Create session
+//       const createdSession = await tx.session.create({
+//         data: {
+//           title,
+//           description,
+//           date: new Date(date),
+//           startTime,
+//           endTime,
+//           userId: userId.toString(),
+//           guests: guests || [],
+//           image,
+//         },
+//       });
+
+//       // Find existing points record or create new one
+//       const existingPoints = await tx.points.findFirst({
+//         where: {
+//           userId: userId.toString(),
+//           type: "SESSION_POINTS",
+//         },
+//       });
+
+//       let updatedPoints;
+//       if (existingPoints) {
+//         // Update existing points record
+//         updatedPoints = await tx.points.update({
+//           where: { id: existingPoints.id },
+//           data: {
+//             value: existingPoints.value + POINTS_FOR_SESSION,
+//           },
+//         });
+//       } else {
+//         // Create new points record
+//         updatedPoints = await tx.points.create({
+//           data: {
+//             userId: userId.toString(),
+//             type: "SESSION_POINTS",
+//             value: POINTS_FOR_SESSION,
+//             reason: "Points from creating sessions",
+//           },
+//         });
+//       }
+
+//       // Create activity log entry for points
+//       await tx.activityLog.create({
+//         data: {
+//           userId: userId.toString(),
+//           action: "POINTS_EARNED",
+//           targetId: createdSession.id,
+//           metadata: {
+//             points: POINTS_FOR_SESSION,
+//             reason: "Created a new session",
+//             newTotal: updatedPoints.value,
+//           },
+//         },
+//       });
+
+//       return [createdSession, updatedPoints];
 //     });
 
 //     // Create Google Calendar event
@@ -160,7 +214,14 @@ const postSchema = Joi.object({
 //       }
 //     }
 
-//     return NextResponse.json(newSession, { status: 201 });
+//     return NextResponse.json(
+//       {
+//         session: newSession,
+//         pointsAwarded: POINTS_FOR_SESSION,
+//         totalPoints: pointsRecord.value,
+//       },
+//       { status: 201 }
+//     );
 //   } catch (error) {
 //     console.log(error);
 //     return NextResponse.json(
@@ -191,68 +252,28 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = session.user.id;
-    const POINTS_FOR_SESSION = 50; // Define points constant
 
-    // Use a transaction to ensure both session creation and points are updated atomically
-    const [newSession, pointsRecord] = await db.$transaction(async (tx) => {
-      // Create session
-      const createdSession = await tx.session.create({
-        data: {
-          title,
-          description,
-          date: new Date(date),
-          startTime,
-          endTime,
-          userId: userId.toString(),
-          guests: guests || [],
-          image,
-        },
-      });
+    // Create session
+    const newSession = await db.session.create({
+      data: {
+        title,
+        description,
+        date: new Date(date),
+        startTime,
+        endTime,
+        userId: userId.toString(),
+        guests: guests || [],
+        image,
+      },
+    });
 
-      // Find existing points record or create new one
-      const existingPoints = await tx.points.findFirst({
-        where: {
-          userId: userId.toString(),
-          type: "SESSION_POINTS",
-        },
-      });
-
-      let updatedPoints;
-      if (existingPoints) {
-        // Update existing points record
-        updatedPoints = await tx.points.update({
-          where: { id: existingPoints.id },
-          data: {
-            value: existingPoints.value + POINTS_FOR_SESSION,
-          },
-        });
-      } else {
-        // Create new points record
-        updatedPoints = await tx.points.create({
-          data: {
-            userId: userId.toString(),
-            type: "SESSION_POINTS",
-            value: POINTS_FOR_SESSION,
-            reason: "Points from creating sessions",
-          },
-        });
-      }
-
-      // Create activity log entry for points
-      await tx.activityLog.create({
-        data: {
-          userId: userId.toString(),
-          action: "POINTS_EARNED",
-          targetId: createdSession.id,
-          metadata: {
-            points: POINTS_FOR_SESSION,
-            reason: "Created a new session",
-            newTotal: updatedPoints.value,
-          },
-        },
-      });
-
-      return [createdSession, updatedPoints];
+    // Award points using the new action
+    const pointsRecord = await awardPoints({
+      userId: userId.toString(),
+      points: PointScale.POINTS_FOR_SESSION,
+      type: "SESSION_POINTS",
+      reason: "Points from creating sessions",
+      targetId: newSession.id,
     });
 
     // Create Google Calendar event
@@ -300,7 +321,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         session: newSession,
-        pointsAwarded: POINTS_FOR_SESSION,
+        pointsAwarded: PointScale.POINTS_FOR_SESSION,
         totalPoints: pointsRecord.value,
       },
       { status: 201 }
