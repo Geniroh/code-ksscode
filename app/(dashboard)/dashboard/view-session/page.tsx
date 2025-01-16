@@ -54,8 +54,8 @@ const ViewSessionPage = () => {
       const startDate = new Date(session.date);
       const [startHour, startMinute] = session?.startTime
         ?.split(":")
-        .map(Number);
-      const [endHour, endMinute] = session?.endTime?.split(":").map(Number);
+        ?.map(Number);
+      const [endHour, endMinute] = session?.endTime?.split(":")?.map(Number);
 
       return {
         title: session.title,

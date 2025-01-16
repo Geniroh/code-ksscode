@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 // import { CalendarDays, Users, Clock, BarChart } from "lucide-react";
 import { Plus, RefreshCw } from "lucide-react";
 import { useFetchData } from "@/hooks/use-query";
-import { customFormatDate, format12HTime, getTimeOfDay } from "@/lib/utils";
+import { format12HTime, getTimeOfDay } from "@/lib/utils";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
@@ -16,6 +16,10 @@ const DashboardPage = () => {
 
   const { data: session } = useSession();
   const { data, isLoading } = useFetchData(`/session?date=${date}&limit=5`);
+  const { data: questions, isLoading: isGettingQuestions } =
+    useFetchData(`/question`);
+
+  console.log({ questions });
 
   return (
     <div className="p-3 space-y-6">
@@ -54,7 +58,7 @@ const DashboardPage = () => {
                 <CardContent>
                   <ul className="space-y-2 min-h-[200px]">
                     {data?.map((session: ISession) => (
-                      <Link href="view-session" key={session.id}>
+                      <Link href="/dashboard/view-session" key={session.id}>
                         <li
                           key={session.id}
                           className="flex justify-between items-center border-b pb-2"
@@ -64,7 +68,8 @@ const DashboardPage = () => {
                               {session.title}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {customFormatDate(session?.date.toString())}
+                              {/* {customFormatDate(session?.date.toString())} */}
+                              {format(session?.date, "MMMM d, yyyy")}
                             </p>
                           </div>
                           <p className="text-sm font-medium">
@@ -99,7 +104,7 @@ const DashboardPage = () => {
             <CardTitle className="border-b pb-2 flex-between">
               <span>Requested Help</span>
               <Link
-                href=""
+                href="/dashboard/questions"
                 className="text-xs font-medium flex gap-1 items-center hover:bg-offwhite px-2 py-2"
               >
                 <Plus size={14} />
@@ -108,7 +113,7 @@ const DashboardPage = () => {
             </CardTitle>
           </CardHeader>
 
-          {isLoading ? (
+          {isGettingQuestions ? (
             <CardContent>
               <div className="flex gap-2 items-center leading-6 py-2 text-sm">
                 <RefreshCw size={12} className="text-heading animate-spin" />{" "}
@@ -117,26 +122,26 @@ const DashboardPage = () => {
             </CardContent>
           ) : (
             <>
-              {false ? (
+              {questions && questions?.length > 0 ? (
                 <CardContent>
                   <ul className="space-y-2 min-h-[200px]">
-                    {data?.map((session: ISession) => (
-                      <Link href="view-session" key={session.id}>
+                    {questions?.map((question: IQuestionWithTag) => (
+                      <Link
+                        href={`/question/${question?.id}`}
+                        key={question?.id}
+                      >
                         <li
-                          key={session.id}
+                          key={question?.id}
                           className="flex justify-between items-center border-b pb-2"
                         >
                           <div>
                             <p className="font-medium text-heading text-sm">
-                              {session.title}
+                              {question?.title}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {customFormatDate(session?.date.toString())}
+                              {format(question?.createdAt, "MMMM d, yyyy")}
                             </p>
                           </div>
-                          <p className="text-sm font-medium">
-                            {format12HTime(session?.startTime)}
-                          </p>
                         </li>
                       </Link>
                     ))}

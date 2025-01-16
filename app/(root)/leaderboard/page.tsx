@@ -12,6 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useFetchData } from "@/hooks/use-query";
 import LeaderboardSkeleton from "@/components/skeleton/LeaderboardPageSkeleton";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type LeaderboardEntry = {
   rank: number;
@@ -37,6 +39,8 @@ const RankChange: React.FC<{ change: "up" | "down" | "same" }> = ({
 const LeaderboardTable = () => {
   const { data, isLoading, isError } = useFetchData("/leaderboard");
 
+  const router = useRouter();
+
   if (isLoading) {
     return <LeaderboardSkeleton />;
   }
@@ -60,8 +64,14 @@ const LeaderboardTable = () => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="my-container py-10">
+        <div
+          onClick={() => router.back()}
+          className="flex items-center cursor-pointer py-6 text-[12px] "
+        >
+          <ChevronLeft size={14} /> Back
+        </div>
         <h2 className="text-2xl font-bold mb-4 text-primary">Leaderboard</h2>
-        <div className="border rounded-lg overflow-hidden min-h-[50vh]">
+        <div className="border rounded-lg overflow-hidden min-h-[40vh]">
           <Table>
             <TableHeader>
               <TableRow>
