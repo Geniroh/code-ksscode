@@ -119,7 +119,7 @@ const CreateQuestionForm = () => {
 
   return (
     <Form {...form}>
-      <h1 className="text-2xl font-bold mb-4">Create a New Question</h1>
+      <h1 className="text-2xl font-bold mb-4">Help Request</h1>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
@@ -169,7 +169,7 @@ const CreateQuestionForm = () => {
               <FormControl>
                 <div>
                   <Input
-                    className="paragraph-regular background-light700_dark300 light-border-2 text-dark300_light700 no-focus min-h-[56px] border"
+                    className=""
                     placeholder="Add tags..."
                     onKeyDown={(e) => handleInputKeyDown(e, field)}
                     // {...field}

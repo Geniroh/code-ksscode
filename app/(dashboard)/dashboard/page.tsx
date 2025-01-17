@@ -19,11 +19,9 @@ const DashboardPage = () => {
   const { data: questions, isLoading: isGettingQuestions } =
     useFetchData(`/question`);
 
-  console.log({ questions });
-
   return (
     <div className="p-3 space-y-6">
-      <div className="flex flex-col items-center justify-center w-full  py-4 bg-white rounded-lg">
+      <div className="flex flex-col items-center justify-center w-full  py-4 bg-[#fafafa] rounded-lg">
         <div className="text-sm font-light">{format(date, "EEEE, MMMM d")}</div>
         <div className="font-semibold">
           Good {getTimeOfDay(date)} {session?.user.name?.split(" ")[0]}

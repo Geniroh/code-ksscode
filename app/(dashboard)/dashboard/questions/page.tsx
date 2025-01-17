@@ -15,7 +15,7 @@ const QuestionPage = () => {
   const { data: questions, isLoading } = useFetchData(`/question`);
 
   return (
-    <div>
+    <div className="p-4 md:pt-6">
       <div className="flex-between">
         <h1 className="text-2xl font-bold mb-4">All Question</h1>
 
@@ -35,7 +35,7 @@ const QuestionPage = () => {
             <div className="space-y-3 mt-6">
               {questions?.map((question: IQuestionWithTag) => (
                 <div
-                  className="w-full p-6 bg-white min-h-10 rounded-md shadow-sm"
+                  className="w-full p-6 bg-[#fafafa] min-h-10 rounded-md shadow-sm"
                   key={question.id}
                 >
                   <div className="flex gap-3 items-start">

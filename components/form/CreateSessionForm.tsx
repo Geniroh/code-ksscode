@@ -288,7 +288,7 @@ const BookSessionForm = () => {
                 {filteredUsers?.map((user: IUser) => (
                   <li key={user.id} className="flex items-center gap-4">
                     <Image
-                      src={user.image}
+                      src={user?.image || ""}
                       alt={user.name}
                       className="w-8 h-8 rounded-full"
                       width={30}
