@@ -51,118 +51,118 @@ interface Suggestion {
   taken: boolean;
 }
 
-// Define the columns for the table
-export const columns: ColumnDef<Suggestion>[] = [
-  {
-    accessorKey: "title",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Title
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div className="max-w-[500px] truncate">
-        {row.getValue("description")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "suggestedUsers",
-    header: "Suggested Users",
-    cell: ({ row }) => {
-      const users = row.getValue("suggestedUsers") as string[];
-      return (
-        <div className="flex flex-wrap gap-1">
-          {users.map((user, index) => (
-            <Badge key={index} variant="secondary">
-              {user}
-            </Badge>
-          ))}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "tags",
-    header: "Tags",
-    cell: ({ row }) => {
-      const tags = row.getValue("tags") as string[];
-      return (
-        <div className="flex flex-wrap gap-1">
-          {tags.map((tag, index) => (
-            <Badge key={index} variant="outline">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "taken",
-    header: "Status",
-    cell: ({ row }) => {
-      const taken = row.getValue("taken") as boolean;
-      return (
-        <div className="flex items-center">
-          {taken ? (
-            <Badge variant="destructive" className="flex items-center gap-1">
-              <X className="h-3 w-3" /> Taken
-            </Badge>
-          ) : (
-            <Badge className="flex items-center gap-1">
-              <Check className="h-3 w-3" /> Available
-            </Badge>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const suggestion = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(suggestion.id)}
-            >
-              Copy suggestion ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View details</DropdownMenuItem>
-            <DropdownMenuItem>
-              Mark as {suggestion.taken ? "available" : "taken"}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-
 const SuggestionPage = () => {
   const { data: suggestions, isLoading } = useFetchData("/suggestion");
+
+  // Move columns definition inside the component
+  const columns: ColumnDef<Suggestion>[] = [
+    {
+      accessorKey: "title",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Title
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+    },
+    {
+      accessorKey: "description",
+      header: "Description",
+      cell: ({ row }) => (
+        <div className="max-w-[500px] truncate">
+          {row.getValue("description")}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "suggestedUsers",
+      header: "Suggested Users",
+      cell: ({ row }) => {
+        const users = row.getValue("suggestedUsers") as string[];
+        return (
+          <div className="flex flex-wrap gap-1">
+            {users.map((user, index) => (
+              <Badge key={index} variant="secondary">
+                {user}
+              </Badge>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "tags",
+      header: "Tags",
+      cell: ({ row }) => {
+        const tags = row.getValue("tags") as string[];
+        return (
+          <div className="flex flex-wrap gap-1">
+            {tags.map((tag, index) => (
+              <Badge key={index} variant="outline">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "taken",
+      header: "Status",
+      cell: ({ row }) => {
+        const taken = row.getValue("taken") as boolean;
+        return (
+          <div className="flex items-center">
+            {taken ? (
+              <Badge variant="destructive" className="flex items-center gap-1">
+                <X className="h-3 w-3" /> Taken
+              </Badge>
+            ) : (
+              <Badge className="flex items-center gap-1">
+                <Check className="h-3 w-3" /> Available
+              </Badge>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const suggestion = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(suggestion.id)}
+              >
+                Copy suggestion ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>View details</DropdownMenuItem>
+              <DropdownMenuItem>
+                Mark as {suggestion.taken ? "available" : "taken"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+    },
+  ];
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
