@@ -1,3 +1,61 @@
+// import NextAuth, { NextAuthConfig } from "next-auth";
+// import { PrismaAdapter } from "@auth/prisma-adapter";
+// import { db } from "@/prisma";
+// import GoogleProvider from "next-auth/providers/google";
+
+// export const { handlers, signIn, signOut, auth } = NextAuth({
+//   pages: {
+//     signIn: "/register",
+//     error: "/auth-error",
+//   },
+//   adapter: PrismaAdapter(db),
+//   providers: [
+//     GoogleProvider({
+//       clientId: process.env.AUTH_GOOGLE_ID,
+//       clientSecret: process.env.AUTH_GOOGLE_SECRET,
+//       authorization: {
+//         params: {
+//           scope:
+//             "openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
+//           prompt: "consent",
+//           access_type: "offline",
+//           response_type: "code",
+//         },
+//       },
+//     }),
+//   ],
+//   secret: process.env.AUTH_SECRET,
+//   session: {
+//     strategy: "jwt",
+//   },
+//   callbacks: {
+//     async signIn({ account }) {
+//       if (account && account?.scope) {
+//         // Verify required scopes are present
+//         const requiredScopes = [
+//           "https://www.googleapis.com/auth/calendar",
+//           "https://www.googleapis.com/auth/calendar.events",
+//         ];
+
+//         const hasRequiredScopes = requiredScopes.every((scope) =>
+//           account?.scope.split(" ").includes(scope)
+//         );
+
+//         if (!hasRequiredScopes) {
+//           return "/reauth";
+//         }
+//       }
+//       return true;
+//     },
+//     async session({ token, session }) {
+//       if (token.sub && session.user) {
+//         session.user.id = token.sub;
+//       }
+//       return session;
+//     },
+//   },
+// } satisfies NextAuthConfig);
+
 import NextAuth, { NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/prisma";
@@ -11,12 +69,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
   providers: [
     GoogleProvider({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
       authorization: {
         params: {
           scope:
-            "https://www.googleapis.com/auth/calendar openid email profile",
+            "openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
         },
       },
     }),
@@ -26,21 +87,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   callbacks: {
-    // async jwt({ token, user, account }) {
-    //   if (account && user) {
-    //     token.accessToken = account.access_token as string;
-    //   }
+    async signIn({ account }) {
+      if (!account) return true;
 
-    //   if (!token.sub) return token;
+      const scope = account.scope;
+      if (!scope) return true;
 
-    //   const existingUser = await getUserByEmail(token.email || "");
+      const requiredScopes = [
+        "https://www.googleapis.com/auth/calendar",
+        "https://www.googleapis.com/auth/calendar.events",
+      ];
 
-    //   if (!existingUser) return token;
+      const hasRequiredScopes = requiredScopes.every((requiredScope) =>
+        scope.split(" ").includes(requiredScope)
+      );
 
-    //   token.role = existingUser.role;
+      if (!hasRequiredScopes) {
+        return "/reauth";
+      }
 
-    //   return token;
-    // },
+      return true;
+    },
     async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;

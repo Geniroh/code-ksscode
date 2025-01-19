@@ -143,7 +143,7 @@ const BookSessionForm = () => {
 
   return (
     <Form {...form}>
-      <h1 className="text-xl font-bold text-heading border-b pb-2">
+      <h1 className="text-xl font-bold text-heading2 border-b pb-2">
         Create a New Session
       </h1>
       <div className="mt-3 text-sm leading-5 text-body font-light mb-4">
@@ -172,7 +172,7 @@ const BookSessionForm = () => {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-heading">Description</FormLabel>
+              <FormLabel className="text-heading2">Description</FormLabel>
               <FormControl>
                 <Textarea
                   {...field}
@@ -191,7 +191,7 @@ const BookSessionForm = () => {
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="text-heading">Pick a date</FormLabel>
+                  <FormLabel className="text-heading2">Pick a date</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -236,7 +236,7 @@ const BookSessionForm = () => {
               name="startTime"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-heading">Start Time</FormLabel>
+                  <FormLabel className="text-heading2">Start Time</FormLabel>
                   <FormControl>
                     <Input type="time" {...field} className="max-w-[150px]" />
                   </FormControl>
@@ -250,7 +250,7 @@ const BookSessionForm = () => {
               name="endTime"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-heading">End Time</FormLabel>
+                  <FormLabel className="text-heading2">End Time</FormLabel>
                   <FormControl>
                     <Input type="time" {...field} className="max-w-[150px]" />
                   </FormControl>
@@ -312,7 +312,7 @@ const BookSessionForm = () => {
         <Button
           type="submit"
           size="lg"
-          className="w-full bg-primary-gradient"
+          className="w-full bg-heading2"
           disabled={mutation.isPending}
         >
           {mutation.isPending ? (

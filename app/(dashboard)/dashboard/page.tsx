@@ -2,8 +2,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { CalendarDays, Users, Clock, BarChart } from "lucide-react";
-import { Plus, RefreshCw } from "lucide-react";
+import { Plus, RefreshCw, Telescope } from "lucide-react";
 import { useFetchData } from "@/hooks/use-query";
 import { format12HTime, getTimeOfDay } from "@/lib/utils";
 import Link from "next/link";
@@ -15,9 +14,9 @@ const DashboardPage = () => {
   const date = new Date(); // Current date
 
   const { data: session } = useSession();
-  const { data, isLoading } = useFetchData(`/session?date=${date}&limit=5`);
+  const { data, isLoading } = useFetchData(`/session?date=${date}&limit=10`);
   const { data: questions, isLoading: isGettingQuestions } =
-    useFetchData(`/question`);
+    useFetchData(`/question?limit=10`);
 
   return (
     <div className="p-3 space-y-6">
@@ -77,6 +76,17 @@ const DashboardPage = () => {
                       </Link>
                     ))}
                   </ul>
+
+                  <>
+                    {data?.length > 9 && (
+                      <Link href="/dashboard/view-session">
+                        <div className="flex justify-center items-center gap-1 text-xs text-primary">
+                          <span>View all</span>
+                          <Telescope size={12} />
+                        </div>
+                      </Link>
+                    )}
+                  </>
                 </CardContent>
               ) : (
                 <CardContent>
@@ -144,6 +154,17 @@ const DashboardPage = () => {
                       </Link>
                     ))}
                   </ul>
+
+                  <>
+                    {questions?.length > 9 && (
+                      <Link href="/dashboard/questions">
+                        <div className="flex justify-center items-center gap-1 text-xs text-primary">
+                          <span>View all</span>
+                          <Telescope size={12} />
+                        </div>
+                      </Link>
+                    )}
+                  </>
                 </CardContent>
               ) : (
                 <CardContent>

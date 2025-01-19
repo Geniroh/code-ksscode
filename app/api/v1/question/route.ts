@@ -18,6 +18,24 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { searchParams } = new URL(req.url);
+    const limitParam = searchParams.get("limit");
+
+    let limit = undefined;
+    if (limitParam) {
+      const limitSchema = Joi.number().integer().positive();
+      const { error, value } = limitSchema.validate(limitParam);
+
+      if (error) {
+        return NextResponse.json(
+          { error: "Invalid limit parameter" },
+          { status: 400 }
+        );
+      }
+
+      limit = value;
+    }
+
     const questionTags = await db.questionTag.findMany({
       include: {
         question: {
@@ -27,6 +45,7 @@ export async function GET(req: NextRequest) {
         },
         tag: true,
       },
+      take: limit,
     });
 
     const groupedQuestions: Record<string, QuestionWithTags> =
