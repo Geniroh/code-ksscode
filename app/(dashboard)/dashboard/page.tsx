@@ -14,9 +14,14 @@ const DashboardPage = () => {
   const date = new Date(); // Current date
 
   const { data: session } = useSession();
-  const { data, isLoading } = useFetchData(`/session?date=${date}&limit=10`);
-  const { data: questions, isLoading: isGettingQuestions } =
-    useFetchData(`/question?limit=10`);
+  const { data, isLoading } = useFetchData(
+    `/session?date=${date}&limit=10`,
+    "get-recent-session"
+  );
+  const { data: questions, isLoading: isGettingQuestions } = useFetchData(
+    `/question?limit=10`,
+    "get-questions"
+  );
 
   return (
     <div className="p-3 space-y-6">

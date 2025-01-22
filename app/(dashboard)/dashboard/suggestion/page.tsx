@@ -14,18 +14,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {
-  ArrowUpDown,
-  ChevronDown,
-  MoreHorizontal,
-  Check,
-  X,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ArrowUpDown, MoreHorizontal, Check, X, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -41,6 +33,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import MarkdownTruncate from "@/components/MarkdownTruncate";
+import TagCard from "@/components/card/TagCard";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import axiosInstance from "@/lib/axios";
 
 interface Suggestion {
   id: string;
@@ -52,9 +49,25 @@ interface Suggestion {
 }
 
 const SuggestionPage = () => {
-  const { data: suggestions, isLoading } = useFetchData("/suggestion");
+  const {
+    data: suggestions,
+    isLoading,
+    refetch,
+  } = useFetchData("/suggestion", "get-suggestions");
 
-  // Move columns definition inside the component
+  const handleSuggestionDelete = async (id: string) => {
+    try {
+      const { data } = await axiosInstance.delete(`/suggestion/${id}`);
+
+      if (data) {
+        refetch();
+        toast.success("Deleted successfully");
+      }
+    } catch (error) {
+      console.error("Error deleting suggestion:", error);
+    }
+  };
+
   const columns: ColumnDef<Suggestion>[] = [
     {
       accessorKey: "title",
@@ -74,26 +87,12 @@ const SuggestionPage = () => {
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => (
-        <div className="max-w-[500px] truncate">
-          {row.getValue("description")}
-        </div>
+        <MarkdownTruncate
+          data={row.getValue("description") || ""}
+          max={15}
+          className="text-sm"
+        />
       ),
-    },
-    {
-      accessorKey: "suggestedUsers",
-      header: "Suggested Users",
-      cell: ({ row }) => {
-        const users = row.getValue("suggestedUsers") as string[];
-        return (
-          <div className="flex flex-wrap gap-1">
-            {users.map((user, index) => (
-              <Badge key={index} variant="secondary">
-                {user}
-              </Badge>
-            ))}
-          </div>
-        );
-      },
     },
     {
       accessorKey: "tags",
@@ -101,11 +100,15 @@ const SuggestionPage = () => {
       cell: ({ row }) => {
         const tags = row.getValue("tags") as string[];
         return (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1 max-w-[200px]">
             {tags.map((tag, index) => (
-              <Badge key={index} variant="outline">
-                {tag}
-              </Badge>
+              <TagCard
+                key={index}
+                _id={index.toString()}
+                name={tag}
+                compact
+                isButton
+              />
             ))}
           </div>
         );
@@ -119,13 +122,13 @@ const SuggestionPage = () => {
         return (
           <div className="flex items-center">
             {taken ? (
-              <Badge variant="destructive" className="flex items-center gap-1">
+              <div className="flex items-center gap-1 text-white bg-red-400 px-2 py-1 text-xs rounded-sm">
                 <X className="h-3 w-3" /> Taken
-              </Badge>
+              </div>
             ) : (
-              <Badge className="flex items-center gap-1">
+              <div className="flex items-center gap-1 text-white bg-green-400 px-2 py-1 rounded-sm text-xs">
                 <Check className="h-3 w-3" /> Available
-              </Badge>
+              </div>
             )}
           </div>
         );
@@ -145,17 +148,24 @@ const SuggestionPage = () => {
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="center">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 onClick={() => navigator.clipboard.writeText(suggestion.id)}
               >
                 Copy suggestion ID
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View details</DropdownMenuItem>
               <DropdownMenuItem>
-                Mark as {suggestion.taken ? "available" : "taken"}
+                <Link href={`/dashboard/suggestion/${suggestion?.id}`}>
+                  View
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="bg-red-600 text-white mt-1 cursor-pointer"
+                onClick={() => handleSuggestionDelete(suggestion?.id)}
+              >
+                Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -192,11 +202,19 @@ const SuggestionPage = () => {
   });
 
   if (isLoading) {
-    return <div>Loading suggestions...</div>;
+    return (
+      <div className="flex gap-2 items-center justify-center leading-6 py-2 text-sm mt-4 min-h-[100px]">
+        <RefreshCw size={12} className="text-heading animate-spin" /> Loading
+        suggestions...
+      </div>
+    );
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full p-4 mt-4">
+      <h1 className="text-xl font-bold text-heading2 border-b pb-2">
+        Suggested Topics
+      </h1>
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter by title..."
@@ -206,39 +224,13 @@ const SuggestionPage = () => {
           }
           className="max-w-sm"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups()?.map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers?.map((header) => {
                   return (
                     <TableHead key={header.id}>
                       {header.isPlaceholder
@@ -255,12 +247,12 @@ const SuggestionPage = () => {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows?.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells()?.map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,

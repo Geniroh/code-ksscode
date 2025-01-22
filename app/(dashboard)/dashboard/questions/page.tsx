@@ -19,8 +19,10 @@ const QuestionPage = () => {
       <div className="flex-between">
         <h1 className="text-2xl font-bold mb-4">All Question</h1>
 
-        <Button asChild>
-          <Link href="/dashboard/ask-question">Ask a question</Link>
+        <Button asChild size={"sm"} className="bg-heading2">
+          <Link href="/dashboard/ask-question" className="text-sm">
+            Ask a question
+          </Link>
         </Button>
       </div>
 
@@ -32,10 +34,10 @@ const QuestionPage = () => {
       ) : (
         <>
           {questions?.length > 0 ? (
-            <div className="space-y-3 mt-6">
+            <div className="space-y-3 mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               {questions?.map((question: IQuestionWithTag) => (
                 <div
-                  className="w-full p-6 bg-[#fafafa] min-h-10 rounded-md shadow-sm"
+                  className="w-full p-6 bg-[#fafafa] min-h-10 rounded-md shadow-sm flex"
                   key={question.id}
                 >
                   <div className="flex gap-3 items-start">

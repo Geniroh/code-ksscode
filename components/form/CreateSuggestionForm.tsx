@@ -145,7 +145,7 @@ const CreateSuggestionForm = () => {
 
   return (
     <Form {...form}>
-      <h1 className="text-xl font-bold text-heading border-b pb-2">
+      <h1 className="text-xl font-bold text-heading2 border-b pb-2">
         Make a suggestion
       </h1>
       <div className="mt-3 text-sm leading-5 text-body font-light mb-4">
@@ -270,7 +270,7 @@ const CreateSuggestionForm = () => {
                   )}
                 </div>
               </FormControl>
-              <FormDescription className="body-regular mt-2.5 text-light-500">
+              <FormDescription className="font-light text-xs">
                 Add up to 3 tags to describe what your question is about. You
                 need to press enter to add a tag.
               </FormDescription>
@@ -281,7 +281,7 @@ const CreateSuggestionForm = () => {
         <Button
           type="submit"
           size="lg"
-          className="w-full bg-primary-gradient"
+          className="w-full bg-heading2"
           disabled={mutation.isPending}
         >
           {mutation.isPending ? (

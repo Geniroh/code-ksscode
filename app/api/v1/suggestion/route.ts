@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { sendMail } from "@/actions/mail";
 import { awardPoints } from "@/actions/points";
 import { PointScale } from "@/constant/pointscale";
+import { sendSlackSuggestionNotification } from "@/actions/slack";
 
 export async function GET(req: NextRequest) {
   try {
@@ -80,6 +81,16 @@ export async function POST(req: NextRequest) {
       reason: "Points from making a suggestion",
       targetId: newSuggestion.id,
     });
+
+    try {
+      await sendSlackSuggestionNotification({
+        title,
+        creator: session.user.name || session.user.email || userId.toString(),
+        suggestionId: newSuggestion?.id,
+      });
+    } catch (error) {
+      console.error("Failed to send Slack notification:", error);
+    }
 
     // Send email notifications
     if (suggestedUsers && suggestedUsers.length > 0) {

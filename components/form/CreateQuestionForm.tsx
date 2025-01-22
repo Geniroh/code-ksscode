@@ -203,7 +203,7 @@ const CreateQuestionForm = () => {
         <Button
           type="submit"
           size="lg"
-          className="w-full bg-primary-gradient"
+          className="w-full bg-heading2"
           disabled={mutation.isPending}
         >
           {mutation.isPending ? (

@@ -28,7 +28,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { useState, useEffect } from "react";
 import Image from "next/image";
 
-const sessionSchema = z
+export const sessionSchema = z
   .object({
     title: z.string().min(1, "Title is required"),
     description: z.string(),
@@ -76,10 +76,10 @@ const sessionSchema = z
     }
   );
 
-type SessionFormValues = z.infer<typeof sessionSchema>;
+export type SessionFormValues = z.infer<typeof sessionSchema>;
 
 const BookSessionForm = () => {
-  const { data, isLoading } = useFetchData("/user");
+  const { data, isLoading } = useFetchData("/user", "get-users");
   const [filteredUsers, setFilteredUsers] = useState<IUser[]>([]);
   const [allSelected, setAllSelected] = useState(false);
 
