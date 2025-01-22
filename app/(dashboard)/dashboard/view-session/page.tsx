@@ -60,70 +60,73 @@ const ViewSessionPage = () => {
 
   // Transform data to match react-big-calendar's expected format
   const transformEvents = (sessions: ISession[] = []): CalendarEvent[] => {
-    return sessions
-      ?.filter((session): session is ISession => {
-        // Filter out invalid sessions
-        return Boolean(
-          session &&
-            session.date &&
-            session.startTime &&
-            session.endTime &&
-            session.title
-        );
-      })
-      ?.map((session) => {
-        try {
-          const startDate = new Date(session.date);
-
-          const [startHour = 0, startMinute = 0] = session.startTime
-            ?.split(":")
-            ?.map(Number) || [0, 0];
-
-          const [endHour = 0, endMinute = 0] = session.endTime
-            ?.split(":")
-            ?.map(Number) || [0, 0];
-
-          const start = new Date(
-            startDate.getFullYear(),
-            startDate.getMonth(),
-            startDate.getDate(),
-            startHour,
-            startMinute
+    return (
+      sessions &&
+      sessions
+        ?.filter((session): session is ISession => {
+          // Filter out invalid sessions
+          return Boolean(
+            session &&
+              session.date &&
+              session.startTime &&
+              session.endTime &&
+              session.title
           );
+        })
+        ?.map((session) => {
+          try {
+            const startDate = new Date(session.date);
 
-          const end = new Date(
-            startDate.getFullYear(),
-            startDate.getMonth(),
-            startDate.getDate(),
-            endHour,
-            endMinute
-          );
+            const [startHour = 0, startMinute = 0] = session.startTime
+              ?.split(":")
+              ?.map(Number) || [0, 0];
 
-          // Validate the created dates
-          if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-            console.warn("Invalid date created for session:", session);
+            const [endHour = 0, endMinute = 0] = session.endTime
+              ?.split(":")
+              ?.map(Number) || [0, 0];
+
+            const start = new Date(
+              startDate.getFullYear(),
+              startDate.getMonth(),
+              startDate.getDate(),
+              startHour,
+              startMinute
+            );
+
+            const end = new Date(
+              startDate.getFullYear(),
+              startDate.getMonth(),
+              startDate.getDate(),
+              endHour,
+              endMinute
+            );
+
+            // Validate the created dates
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+              console.warn("Invalid date created for session:", session);
+              return null;
+            }
+
+            // Create a properly typed calendar event
+            const calendarEvent: CalendarEvent = {
+              ...session,
+              title: session.title || "Untitled Session",
+              start,
+              end,
+              guests: session.guests || [],
+              user: session.user || undefined,
+              allDay: false, // Add required BigCalendarEvent property
+              resource: null, // Add required BigCalendarEvent property
+            };
+
+            return calendarEvent;
+          } catch (err) {
+            console.error("Error transforming session:", session, err);
             return null;
           }
-
-          // Create a properly typed calendar event
-          const calendarEvent: CalendarEvent = {
-            ...session,
-            title: session.title || "Untitled Session",
-            start,
-            end,
-            guests: session.guests || [],
-            user: session.user || undefined,
-            allDay: false, // Add required BigCalendarEvent property
-            resource: null, // Add required BigCalendarEvent property
-          };
-
-          return calendarEvent;
-        } catch (err) {
-          console.error("Error transforming session:", session, err);
-          return null;
-        }
-      })
-      ?.filter((event): event is CalendarEvent => event !== null);
+        })
+        ?.filter((event): event is CalendarEvent => event !== null)
+    );
   };
 
   const events = transformEvents(data || []);

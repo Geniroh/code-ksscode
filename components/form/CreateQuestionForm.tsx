@@ -119,8 +119,10 @@ const CreateQuestionForm = () => {
 
   return (
     <Form {...form}>
-      <h1 className="text-2xl font-bold mb-4">Help Request</h1>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <h1 className="text-xl font-bold text-heading2 border-b pb-2">
+        Help Request
+      </h1>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-4">
         <FormField
           control={form.control}
           name="title"

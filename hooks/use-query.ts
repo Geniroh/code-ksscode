@@ -11,6 +11,11 @@ const postData = async (url: string, payload = {}) => {
   return data;
 };
 
+const patchData = async (url: string, payload = {}) => {
+  const { data } = await axiosInstance.patch(url, payload);
+  return data;
+};
+
 export const useFetchData = (
   url: string,
   key?: string,
@@ -28,6 +33,14 @@ export const usePostData = (url: string, options = {}) => {
   return useMutation({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     mutationFn: (payload: any) => postData(url, payload),
+    ...options,
+  });
+};
+
+export const usePatchData = (url: string, options = {}) => {
+  return useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mutationFn: (payload: any) => patchData(url, payload),
     ...options,
   });
 };

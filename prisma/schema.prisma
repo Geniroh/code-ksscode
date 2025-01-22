@@ -26,6 +26,7 @@ model User {
     question      Question[]
     answers       Answers[]
     activityLog   ActivityLog[]
+    vote          Vote[]
     // Optional for WebAuthn support
     Authenticator Authenticator[]
 
@@ -167,6 +168,7 @@ model Answers {
     content    String
     upvotes    Int    @default(0)
     downvotes  Int    @default(0)
+    vote       Vote[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -207,4 +209,17 @@ model Suggestions {
     suggestedUsers String[]
     tags           String[]
     taken          Boolean  @default(false)
+}
+
+model Vote {
+    id        String   @id @default(auto()) @map("_id") @db.ObjectId
+    userId    String   @db.ObjectId
+    answerId  String   @db.ObjectId
+    type      String // "upvote" or "downvote"
+    createdAt DateTime @default(now())
+
+    user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    answer Answers @relation(fields: [answerId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, answerId])
 }

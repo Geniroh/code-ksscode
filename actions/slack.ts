@@ -144,3 +144,62 @@ export async function sendSlackSuggestionNotification({
     console.log(error);
   }
 }
+
+type SlackQuestionNotificationParams = {
+  title: string;
+  creator: string;
+  questionId: string;
+};
+
+export async function sendSlackQuestionNotification({
+  title,
+  creator,
+  questionId,
+}: SlackQuestionNotificationParams) {
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+
+  if (!webhookUrl) {
+    throw new Error("Slack webhook URL not configured");
+  }
+
+  const payload = {
+    text: "📝❔ Help Requested",
+    blocks: [
+      {
+        type: "header",
+        text: {
+          type: "plain_text",
+          text: "📝❔ Help Requested",
+        },
+      },
+      {
+        type: "section",
+        fields: [
+          {
+            type: "mrkdwn",
+            text: `*Title:*\n ${title}`,
+          },
+          {
+            type: "mrkdwn",
+            text: `*Asked by:*\n ${creator}`,
+          },
+        ],
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `<https://code-ksscode.vercel.app/question/${questionId}|Help out>`,
+        },
+      },
+    ],
+  };
+
+  try {
+    const { data } = await axios.post(webhookUrl, payload);
+
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+}

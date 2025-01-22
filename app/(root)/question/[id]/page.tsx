@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,7 +11,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useFetchData, usePostData } from "@/hooks/use-query";
+import { useFetchData, usePatchData, usePostData } from "@/hooks/use-query";
 import { useParams, useRouter } from "next/navigation";
 import { format } from "date-fns";
 import QuestionPageSkeleton from "@/components/skeleton/QuestionPageSkeleton";
@@ -21,7 +21,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import toast from "react-hot-toast";
-import { Loader, ChevronLeft } from "lucide-react";
+import { Loader, ChevronLeft, ArrowBigUp, ArrowBigDown } from "lucide-react";
 import MarkdownTruncate from "@/components/MarkdownTruncate";
 import TagCard from "@/components/card/TagCard";
 import { useSession } from "next-auth/react";
@@ -51,6 +51,8 @@ export default function QuestionPage() {
     },
   });
 
+  useEffect(() => {}, [editorKey]);
+
   const mutation = usePostData("/answer", {
     onSuccess: () => {
       refetch();
@@ -66,6 +68,20 @@ export default function QuestionPage() {
     },
   });
 
+  const mutateVote = usePostData("/answer/vote", {
+    onSuccess: () => {
+      refetch();
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || "Something went wrong");
+    },
+  });
+
+  const onVote = (answerId: string, action: "upvote" | "downvote") => {
+    mutateVote.mutate({ answerId, action });
+  };
+
   function onSubmit(values: AnswerFormValues) {
     const payload = {
       ...values,
@@ -76,6 +92,25 @@ export default function QuestionPage() {
   }
 
   const router = useRouter();
+
+  const { mutate: patchAnswer, isPending: isTogglingStatus } = usePatchData(
+    `question/${questionId}/status`
+  );
+
+  const onMarkAnswered = async () => {
+    await patchAnswer(
+      { answered: !data?.answered },
+      {
+        onSuccess: (response) => {
+          toast.success(response.message);
+        },
+        onError: (error) => {
+          console.error("Error updating vote:", error);
+        },
+      }
+    );
+    refetch();
+  };
 
   if (isLoading) {
     return <QuestionPageSkeleton />;
@@ -110,15 +145,21 @@ export default function QuestionPage() {
 
             <div>
               {session?.data?.user?.id === data?.author ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={`${data?.answered && "text-green-400"}`}
-                >
-                  {!data?.answered
-                    ? "Mark as answered"
-                    : "Mark as not answered"}
-                </Button>
+                <>
+                  {isTogglingStatus ? (
+                    <Loader className="animate-spin text-heading2" />
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onMarkAnswered}
+                    >
+                      {data?.answered
+                        ? "Mark as unanswered"
+                        : "Mark as answered"}
+                    </Button>
+                  )}
+                </>
               ) : (
                 <>
                   <div className="flex items-center space-x-2">
@@ -182,9 +223,32 @@ export default function QuestionPage() {
                         </p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
-                      {answer?.upvotes} votes
-                    </Button>
+                    <>
+                      {mutateVote.isPending ? (
+                        <Loader className="animate-spin text-heading2" />
+                      ) : (
+                        <div className="flex gap-2">
+                          <Button
+                            title="Up vote"
+                            className="flex items-center"
+                            size={"sm"}
+                            variant="ghost"
+                            onClick={() => onVote(answer.id, "upvote")}
+                          >
+                            <ArrowBigUp /> {answer?.upvotes}
+                          </Button>
+                          <Button
+                            title="Down vote"
+                            className="flex items-center"
+                            size={"sm"}
+                            variant="ghost"
+                            onClick={() => onVote(answer.id, "downvote")}
+                          >
+                            <ArrowBigDown /> {answer?.downvotes}
+                          </Button>
+                        </div>
+                      )}
+                    </>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -194,9 +258,12 @@ export default function QuestionPage() {
             ))}
         </div>
 
-        <div>
+        <div className="mt-4">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-8 mt-4"
+            >
               <FormField
                 control={form.control}
                 name="content"

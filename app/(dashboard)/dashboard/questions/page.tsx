@@ -12,7 +12,10 @@ import { RefreshCw } from "lucide-react";
 import Image from "next/image";
 
 const QuestionPage = () => {
-  const { data: questions, isLoading } = useFetchData(`/question`);
+  const { data: questions, isLoading } = useFetchData(
+    `/question`,
+    "get-all-question"
+  );
 
   return (
     <div className="p-4 md:pt-6">
@@ -72,7 +75,7 @@ const QuestionPage = () => {
                       </div>
                       <MarkdownTruncate
                         data={question?.content || ""}
-                        max={50}
+                        max={30}
                         className="text-sm mt-3"
                       />
 

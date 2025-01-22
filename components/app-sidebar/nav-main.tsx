@@ -41,7 +41,7 @@ const links = [
     isActive: true,
     items: [
       {
-        title: "Add a session",
+        title: "Book a session",
         url: "/dashboard/book-session",
       },
       {

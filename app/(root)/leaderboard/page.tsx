@@ -37,7 +37,10 @@ const RankChange: React.FC<{ change: "up" | "down" | "same" }> = ({
 };
 
 const LeaderboardTable = () => {
-  const { data, isLoading, isError } = useFetchData("/leaderboard");
+  const { data, isLoading, isError } = useFetchData(
+    "/leaderboard",
+    "get-leaderboard"
+  );
 
   const router = useRouter();
 
@@ -49,7 +52,6 @@ const LeaderboardTable = () => {
     return <p>Error loading leaderboard.</p>;
   }
 
-  // Transform the API data into the required format
   const leaderboardData: LeaderboardEntry[] = data?.leaderboard?.map(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (user: any) => ({

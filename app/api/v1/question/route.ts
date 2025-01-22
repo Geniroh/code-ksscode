@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { db } from "@/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import Joi from "joi";
 
 import type { Question, Tags } from "@prisma/client";
+import { sendSlackQuestionNotification } from "@/actions/slack";
 
 type QuestionWithTags = Question & {
   tags: Tags[];
@@ -44,6 +44,9 @@ export async function GET(req: NextRequest) {
           },
         },
         tag: true,
+      },
+      orderBy: {
+        createdAt: "desc",
       },
       take: limit,
     });
@@ -173,6 +176,12 @@ export async function POST(req: NextRequest) {
             questionId: newQuestion.id,
             tagId,
           })),
+        });
+
+        await sendSlackQuestionNotification({
+          title,
+          creator: session.user.name || session.user.email || userId.toString(),
+          questionId: newQuestion.id,
         });
       }
 

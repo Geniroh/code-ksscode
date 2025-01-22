@@ -3,7 +3,7 @@ import React from "react";
 
 const MakeSuggestionPage = () => {
   return (
-    <div className="p-4">
+    <div className="p-4" suppressHydrationWarning>
       <CreateSuggestionForm />
     </div>
   );
