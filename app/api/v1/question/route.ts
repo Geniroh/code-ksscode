@@ -5,6 +5,8 @@ import Joi from "joi";
 
 import type { Question, Tags } from "@prisma/client";
 import { sendSlackQuestionNotification } from "@/actions/slack";
+import { awardPoints } from "@/actions/points";
+import { PointScale } from "@/constant/pointscale";
 
 type QuestionWithTags = Question & {
   tags: Tags[];
@@ -184,6 +186,15 @@ export async function POST(req: NextRequest) {
           questionId: newQuestion.id,
         });
       }
+
+      // Award points using the new action
+      await awardPoints({
+        userId: userId.toString(),
+        points: PointScale.POINTS_FOR_QUESTION,
+        type: "QUESTION_POINTS",
+        reason: "Points from asking for help",
+        targetId: newQuestion.id,
+      });
 
       return newQuestion;
     });

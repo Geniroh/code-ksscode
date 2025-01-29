@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import Joi from "joi";
 import { auth } from "@/auth";
 import { sendMail } from "@/actions/mail";
-// import { createCalendarEvent } from "@/actions/calendar";
 import { awardPoints } from "@/actions/points";
 import { PointScale } from "@/constant/pointscale";
 import { sendSlackSessionNotification } from "@/actions/slack";
@@ -144,36 +143,6 @@ export async function POST(req: NextRequest) {
     } catch (error) {
       console.error("Failed to send Slack notification:", error);
     }
-
-    // Create Google Calendar event
-    // try {
-    //   const calendarEvent = await createCalendarEvent({
-    //     userId,
-    //     title,
-    //     description,
-    //     startTime,
-    //     endTime,
-    //     date,
-    //     guests,
-    //   });
-
-    //   console.log({ calendarEvent });
-
-    //   await db.session.update({
-    //     where: { id: newSession.id },
-    //     data: { calendarEventId: calendarEvent.id },
-    //   });
-    //   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // } catch (error: any) {
-    //   console.log({ error });
-    //   if (error.message.includes("expired")) {
-    //     console.log("User needs to reconnect Google Calendar");
-    //   } else if (error.message === "User not connected to Google Calendar") {
-    //     console.log("User needs to connect Google Calendar");
-    //   } else {
-    //     console.error("Failed to create calendar event:", error);
-    //   }
-    // }
 
     // Send email notifications
     if (guests && guests.length > 0) {

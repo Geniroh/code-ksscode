@@ -2,6 +2,10 @@ import { db } from "@/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import Joi from "joi";
 import { auth } from "@/auth";
+import { sendSlackSessionNotification } from "@/actions/slack";
+import { sendMail } from "@/actions/mail";
+import { awardPoints } from "@/actions/points";
+import { PointScale } from "@/constant/pointscale";
 
 const postSchema = Joi.object({
   title: Joi.string().required(),
@@ -36,12 +40,12 @@ export async function POST(req: NextRequest) {
 
     const { suggestionId, ...sessionData } = value;
 
-    console.log({ sessionData });
-
     const session = await auth();
     if (!session) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+
+    const userId = session.user.id;
 
     const sessionResponse = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}session`,
@@ -60,7 +64,40 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log({ sessionResponse });
+    try {
+      await sendSlackSessionNotification({
+        title: sessionData?.title,
+        date: sessionData?.date,
+        startTime: sessionData?.startTime,
+        endTime: sessionData?.endTime,
+        creator: session.user.name || session.user.email || userId.toString(),
+      });
+    } catch (error) {
+      console.error("Failed to send Slack notification:", error);
+    }
+
+    // Send email notifications
+    if (sessionData?.guests && sessionData?.guests.length > 0) {
+      for (const guest of sessionData?.guests) {
+        const emailContent = `
+          <h1>You are invited to a session</h1>
+          <p>Title: ${sessionData?.title}</p>
+          <p>Date: ${sessionData?.date}</p>
+          <p>Start Time: ${sessionData?.startTime}</p>
+          <p>End Time: ${sessionData?.endTime}</p>
+          <p>Description: ${sessionData?.description}</p>
+        `;
+        await sendMail("You're Invited!", guest, emailContent);
+      }
+    }
+
+    await awardPoints({
+      userId: userId.toString(),
+      points: PointScale.POINTS_FOR_TAKING_SUGGESTION,
+      type: "SUGGESTION_TAKEN_POINTS",
+      reason: "Points for taking a suggestion",
+      targetId: suggestionId,
+    });
 
     await db.suggestions.update({
       where: { id: suggestionId },

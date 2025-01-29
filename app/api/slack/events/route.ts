@@ -1,17 +1,18 @@
 // import { NextRequest, NextResponse } from "next/server";
 
-// const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN; // Set in .env.local
+// const SLACK_BOT_TOKEN = process.env.SLACK_BOT_TOKEN;
 // const SLACK_OPEN_VIEW_URL = "https://slack.com/api/views.open";
 
 // export async function POST(req: NextRequest) {
 //   const formData = await req.formData();
-//   const trigger_id = formData.get("trigger_id");
+//   const trigger_id = formData.get("trigger_id") || "test";
+
+//   console.log({ formData });
 
 //   if (!trigger_id) {
 //     return NextResponse.json({ error: "Missing trigger_id" }, { status: 400 });
 //   }
 
-//   // Open Slack Modal (form)
 //   const response = await fetch(SLACK_OPEN_VIEW_URL, {
 //     method: "POST",
 //     headers: {
@@ -59,16 +60,17 @@
 //   });
 
 //   const result = await response.json();
+//   console.log({ result });
 //   return NextResponse.json(result);
 // }
 
 import { NextRequest, NextResponse } from "next/server";
 
-const FORM_URL = "https://yourdomain.com/knowledge-session-form"; // Your form page
+const FORM_URL = "https://code-ksscode.vercel.app/dashboard/book-session";
 
 export async function POST(req: NextRequest) {
-  const body = await req.text(); // Read raw request body
-  const params = new URLSearchParams(body); // Parse form data
+  const body = await req.text();
+  const params = new URLSearchParams(body);
   const user_id = params.get("user_id");
 
   if (!user_id) {

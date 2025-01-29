@@ -353,7 +353,7 @@ const SuggestionDetailsPage = () => {
               <Button
                 type="submit"
                 size="lg"
-                className="w-full bg-heading2"
+                className="w-full bg-heading2 hover:bg-heading2/80"
                 disabled={mutation.isPending || suggestion?.taken}
               >
                 {mutation.isPending ? (

@@ -6,7 +6,8 @@ type PointsType =
   | "SESSION_POINTS"
   | "QUESTION_POINTS"
   | "ANSWER_POINTS"
-  | "SUGGESTION_POINTS";
+  | "SUGGESTION_POINTS"
+  | "SUGGESTION_TAKEN_POINTS";
 
 interface AwardPointsParams {
   userId: string;

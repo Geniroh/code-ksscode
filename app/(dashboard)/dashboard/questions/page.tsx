@@ -20,11 +20,15 @@ const QuestionPage = () => {
   return (
     <div className="p-4 md:pt-6">
       <div className="flex-between">
-        <h1 className="text-2xl font-bold mb-4">All Question</h1>
+        <h1 className="text-2xl font-bold mb-4">All Help Request</h1>
 
-        <Button asChild size={"sm"} className="bg-heading2">
+        <Button
+          asChild
+          size={"sm"}
+          className="bg-heading2 hover:bg-heading2/80"
+        >
           <Link href="/dashboard/ask-question" className="text-sm">
-            Ask a question
+            Ask for help
           </Link>
         </Button>
       </div>

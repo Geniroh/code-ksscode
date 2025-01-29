@@ -12,11 +12,11 @@ import { usePathname } from "next/navigation";
 
 const routes = [
   { path: "/dashboard", label: "Dashboard" },
-  { path: "/book-session", label: "Book Session" },
+  { path: "/dashboard/book-session", label: "Book Session" },
   { path: "/view-session", label: "View Sessions" },
   { path: "/make-suggestion", label: "Make Suggestion" },
   { path: "/view-suggestion", label: "View Suggestions" },
-  { path: "/ask-question", label: "All questions" },
+  { path: "/dashboard/ask-question", label: "Ask for help" },
 ];
 
 export function DynamicBreadcrumb() {

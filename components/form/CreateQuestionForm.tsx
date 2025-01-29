@@ -73,7 +73,6 @@ const CreateQuestionForm = () => {
   });
 
   function onSubmit(values: QuestionFormValues) {
-    console.log({ values });
     mutation.mutate(values);
   }
 
@@ -122,6 +121,10 @@ const CreateQuestionForm = () => {
       <h1 className="text-xl font-bold text-heading2 border-b pb-2">
         Help Request
       </h1>
+      <div className="mt-3 text-sm leading-5 text-body font-light mb-4">
+        This allows other team members know areas you need assistance with, be
+        as descriptive as you can be.
+      </div>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mt-4">
         <FormField
           control={form.control}
@@ -205,7 +208,7 @@ const CreateQuestionForm = () => {
         <Button
           type="submit"
           size="lg"
-          className="w-full bg-heading2"
+          className="w-full bg-heading2 hover:bg-heading2/80"
           disabled={mutation.isPending}
         >
           {mutation.isPending ? (

@@ -15,11 +15,11 @@ const DashboardPage = () => {
 
   const { data: session } = useSession();
   const { data, isLoading } = useFetchData(
-    `/session?date=${date}&limit=10`,
+    `/session?date=${date}&limit=5`,
     "get-recent-session"
   );
   const { data: questions, isLoading: isGettingQuestions } = useFetchData(
-    `/question?limit=10`,
+    `/question?limit=5`,
     "get-questions"
   );
 
@@ -82,8 +82,8 @@ const DashboardPage = () => {
                     ))}
                   </ul>
 
-                  <>
-                    {data?.length > 9 && (
+                  <div className="mt-3">
+                    {data?.length >= 5 && (
                       <Link href="/dashboard/view-session">
                         <div className="flex justify-center items-center gap-1 text-xs text-primary">
                           <span>View all</span>
@@ -91,7 +91,7 @@ const DashboardPage = () => {
                         </div>
                       </Link>
                     )}
-                  </>
+                  </div>
                 </CardContent>
               ) : (
                 <CardContent>
@@ -117,7 +117,7 @@ const DashboardPage = () => {
             <CardTitle className="border-b pb-2 flex-between">
               <span>Requested Help</span>
               <Link
-                href="/dashboard/questions"
+                href="/dashboard/ask-question"
                 className="text-xs font-medium flex gap-1 items-center hover:bg-offwhite px-2 py-2"
               >
                 <Plus size={14} />
@@ -160,8 +160,8 @@ const DashboardPage = () => {
                     ))}
                   </ul>
 
-                  <>
-                    {questions?.length > 9 && (
+                  <div className="mt-3">
+                    {questions?.length >= 5 && (
                       <Link href="/dashboard/questions">
                         <div className="flex justify-center items-center gap-1 text-xs text-primary">
                           <span>View all</span>
@@ -169,7 +169,7 @@ const DashboardPage = () => {
                         </div>
                       </Link>
                     )}
-                  </>
+                  </div>
                 </CardContent>
               ) : (
                 <CardContent>
