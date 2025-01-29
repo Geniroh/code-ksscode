@@ -67,15 +67,16 @@ import { NextRequest, NextResponse } from "next/server";
 const FORM_URL = "https://yourdomain.com/knowledge-session-form"; // Your form page
 
 export async function POST(req: NextRequest) {
-  const formData = await req.formData();
-  const user_id = formData.get("user_id");
+  const body = await req.text(); // Read raw request body
+  const params = new URLSearchParams(body); // Parse form data
+  const user_id = params.get("user_id");
 
   if (!user_id) {
     return NextResponse.json({ error: "User ID not found" }, { status: 400 });
   }
 
   return NextResponse.json({
-    response_type: "ephemeral", // Only visible to the user
+    response_type: "ephemeral",
     text: `Click the link below to create a knowledge-sharing session:\n👉 <${FORM_URL}|Open Form>`,
   });
 }
