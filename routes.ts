@@ -1,7 +1,12 @@
 /**
  * An array of routes that are accessible to the public
  */
-export const publicRoutes = ["/", "/register", "/auth-error", "slack/events"];
+export const publicRoutes = [
+  "/",
+  "/register",
+  "/auth-error",
+  "/api/slack/events",
+];
 
 /**
  * An array of routes that are accessible only to authenticated users
