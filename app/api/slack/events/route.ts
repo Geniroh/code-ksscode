@@ -66,12 +66,20 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-const FORM_URL = "https://code-ksscode.vercel.app/dashboard/book-session";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_URL || "https://code-ksscode.vercel.app";
+
+const CREATE_SESSION_URL = `${BASE_URL}/dashboard/book-session`;
+const UPCOMING_SESSIONS_URL = `${BASE_URL}/dashboard/view-session`;
+const SUGGESTION_URL = `${BASE_URL}/dashboard/make-suggestion`;
+const HELP_URL = `${BASE_URL}/dashboard/ask-question`;
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const params = new URLSearchParams(body);
   const user_id = params.get("user_id");
+
+  console.log({ params });
 
   if (!user_id) {
     return NextResponse.json({ error: "User ID not found" }, { status: 400 });
@@ -79,6 +87,10 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     response_type: "ephemeral",
-    text: `Click the link below to create a knowledge-sharing session:\n👉 <${FORM_URL}|Open Form>`,
+    text: `:bulb: *Knowledge Sharing Commands* :bulb:\n\n
+- 📅 *Create a session:* <${CREATE_SESSION_URL}|Click here>\n
+- 📖 *View upcoming sessions:* <${UPCOMING_SESSIONS_URL}|Click here>\n
+- 💡 *Make a suggestion:* <${SUGGESTION_URL}|Click here>\n
+- ❓ *Need help?* <${HELP_URL}|Click here>`,
   });
 }
