@@ -55,7 +55,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
                   <DropdownMenuItem>
                     <Link href="/dashboard/profile">Profile</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>Team</DropdownMenuItem>
+                  {/* <DropdownMenuItem>Team</DropdownMenuItem> */}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <form
