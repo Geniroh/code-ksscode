@@ -87,7 +87,11 @@ export async function POST(req: NextRequest) {
           <p>End Time: ${sessionData?.endTime}</p>
           <p>Description: ${sessionData?.description}</p>
         `;
-        await sendMail("You're Invited!", guest, emailContent);
+        await sendMail(
+          "Knowledge sharing session invitation",
+          guest,
+          emailContent
+        );
       }
     }
 

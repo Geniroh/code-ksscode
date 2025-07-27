@@ -1,0 +1,48 @@
+steps:
+  - id: create-env
+    name: "ubuntu"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        echo "AUTH_SECRET=$_AUTH_SECRET" >> ./env
+        echo "AUTH_TRUST_HOST=$_AUTH_TRUST_HOST" >> ./env
+        echo "NEXT_PUBLIC_API_URL=$_NEXT_PUBLIC_API_URL" >> ./env
+        echo "AUTH_GOOGLE_ID=$_AUTH_GOOGLE_ID" >> ./env
+        echo "AUTH_GOOGLE_SECRET=$_AUTH_GOOGLE_SECRET" >> ./env
+        echo "DATABASE_URL=$_DATABASE_URL" >> ./env
+        echo "NODEMAILER_PW=$_NODEMAILER_PW" >> ./env
+        echo "SLACK_WEBHOOK_URL=$_SLACK_WEBHOOK_URL" >> ./env
+        echo "SLACK_CLIENT_SECRET=$_SLACK_CLIENT_SECRET" >> ./env
+        echo "SLACK_BOT_TOKEN=$_SLACK_BOT_TOKEN" >> ./env
+        echo "NEXT_PUBLIC_BASE_URL=$_NEXT_PUBLIC_BASE_URL" >> ./env
+
+  - id: build-image
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: bash
+    args:
+      [
+        "-c",
+        "docker build -t ${_IMAGE_TAG}$SHORT_SHA -f ./frontend/Dockerfile ./frontend",
+      ]
+
+  - id: push-image
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "${_IMAGE_TAG}$SHORT_SHA"]
+
+  - id: deploy-image
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      [
+        "run",
+        "deploy",
+        "$_SERVICE_NAME",
+        "--image",
+        "${_IMAGE_TAG}$SHORT_SHA",
+        "--region",
+        "$_REGION",
+      ]
+
+options:
+  logging: CLOUD_LOGGING_ONLY

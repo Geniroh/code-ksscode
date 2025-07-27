@@ -1,6 +1,9 @@
 import { format12HTime } from "@/lib/utils";
 import axios from "axios";
 
+const clientUrl =
+  process.env.NEXT_PUBLIC_BASE_URL || "https://code-ksscode.vercel.app";
+
 type SlackSessionNotificationParams = {
   title: string;
   description?: string | null;
@@ -71,7 +74,7 @@ export async function sendSlackSessionNotification({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `<https://code-ksscode.vercel.app/dashboard/view-session|View request>`,
+          text: `<${clientUrl}/dashboard/view-session|View request>`,
         },
       },
     ],
@@ -130,7 +133,7 @@ export async function sendSlackSuggestionNotification({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `<https://code-ksscode.vercel.app/dashboard/suggestion/${suggestionId}|Handle Session>`,
+          text: `<${clientUrl}/dashboard/suggestion/${suggestionId}|Handle Session>`,
         },
       },
     ],
@@ -189,7 +192,7 @@ export async function sendSlackQuestionNotification({
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `<https://code-ksscode.vercel.app/question/${questionId}|Help out>`,
+          text: `<${clientUrl}/question/${questionId}|Help out>`,
         },
       },
     ],
